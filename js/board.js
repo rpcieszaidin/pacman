@@ -7,7 +7,11 @@ pacman.Board = class {
     constructor() {
         this.maps = [
             [
-                [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
+                [0, 0, 1, 0, 0, 0],
+                [0, 0, 1, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0],
+                [1, 1, 0, 1, 0, 0],
+                [0, 0, 0, 1, 0, 0]
             ]
         ];
         this.entities = [];
@@ -23,24 +27,37 @@ pacman.Board = class {
     }
 
     drawBoard() {
+        let table = document.createElement("table");
+        table.setAttribute("id", "board");
         let map = this.maps[0];
         for (let i = 0; i < map.length; i++) {
+            let tr = document.createElement("tr");
             for(let j = 0; j < map[i].length; j++) {
+                tr.appendChild(document.createElement("th"));
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
-                        console.log('P');
+                        tr.cells[j].appendChild(document.createTextNode('P'));
                     } 
                 } else {
-                    console.log(map[i][j]);
+                    tr.cells[j].appendChild(document.createTextNode(map[i][j]));
                 }
+                table.appendChild(tr);
             }
         }
+        document.body.appendChild(table);
     }
 
     moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
-        if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
-            
+        if (x >= 0 && x < map.length && y >= 0 && y < map[map.length-1].length) {
+            if (map[x][y] == 0) {
+                map[entity.x][entity.y] = 0;
+                map[x][y] = entity;
+                entity.x = x;
+                entity.y = y;
+            } else if (map[x][y] != 1) {
+                
+            }
         }
     }
 }
