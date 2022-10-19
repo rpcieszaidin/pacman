@@ -7,57 +7,144 @@ pacman.Board = class {
     constructor() {
         this.maps = [
             [
-                [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
+                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+                [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
             ]
         ];
         this.entities = [];
     }
+
     correctPosition(entity){
-            if(this.maps[entity.z][entity.y][entity.x] = 0){
+            let map = this.maps[entity.z];
+            if(map[entity.y][entity.x] == 0){
                 this.maps[entity.z][entity.y][entity.x] = entity;
-            }else{
-                console.log('La entidad no se pude generar');
-            }
+                this.entities.push(entity);
+                this.move(entity);
+            }//else{
+            //     console.log('La entidad no se pude generar');
+            // }
         }
+
     addEntity(type) {
         if (type === pacman.PLAYER) {
             // implementar metodo posicion correcta
             let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
-            this.entities.push(player);
             this.correctPosition(player);
-            correctPosition(player);
-        }else{
-            let npc = new pacman.Pacman(0,4,1, pacman.ENEMY);
-            this.entities.push(npc);
+        }
+        if(type === pacman.ENEMY){
+            let npc = new pacman.Pacman(0, 2, 0, pacman.ENEMY);
             this.correctPosition(npc);
-            correctPosition(npc);
         }
     }
 
-    
-
     drawBoard() {
         let map = this.maps[0];
+        let div = document.getElementById('map');
+        
         for (let i = 0; i < map.length; i++) {
             for(let j = 0; j < map[i].length; j++) {
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
-                        console.log('P');
+                        //console.log('P');
+                        let space = document.createElement('div');
+                        space.setAttribute("class" , "player");
+                        div.appendChild(space);
                     }else{
-                        console.log('E');
+                        //console.log('E');
+                        let space = document.createElement('div');
+                        space.setAttribute("class" , "npc");
+                        div.appendChild(space);
                     } 
-                } else {
-                    console.log(map[i][j]);
-                }
+                } else if(map[i][j] == 0){
+                    let space = document.createElement('div');
+                        space.setAttribute("class" , "space");
+                        div.appendChild(space);
+                    //console.log(map[i][j]);
+                }else{
+                    let space = document.createElement('div');
+                        space.setAttribute("class" , "block");
+                        div.appendChild(space);
+                } 
             }
+            let br = document.createElement('br');
+            div.appendChild(br);
         }
     }
 
     moveEntity(entity, x, y) {
+        let div = document.getElementById('map');
         let map = this.maps[entity.z];
-        if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
+        if (x >= 0 && x < map[entity.y].length && y >= 0 && y < map.length) {
             entity.x = x;
             entity.y = y;
+            this.maps[entity.z][entity.y][entity.x] = entity;
+            while (div.firstChild) {
+                div.removeChild(div.firstChild);
+            }  
+            this.drawBoard();
+            
+        }
+    }
+
+    move(entity){
+        if(entity.type == pacman.PLAYER){
+            document.addEventListener("keyup", (e) => {
+                switch (e.key) {
+                    case "ArrowLeft":
+                        //console.log('l');
+                        let l = entity.x - 1;
+                        if(this.maps[entity.z][entity.y][l] == 0){
+                            this.maps[entity.z][entity.y][entity.x] = 0;
+                            this.moveEntity(entity, l, entity.y);
+                        }
+                            
+                        
+                    break;
+                    case "ArrowRight":
+                        //console.log('r');
+                        let r = entity.x + 1;
+                        if(this.maps[entity.z][entity.y][r] == 0){
+                            this.maps[entity.z][entity.y][entity.x] = 0;
+                            this.moveEntity(entity, r, entity.y);
+                        }
+                        
+                    break;
+                        case "ArrowUp":
+                        //console.log('u');
+                        
+                        let u = entity.y - 1;
+                        if (u >= 0){
+                            if(this.maps[entity.z][u][entity.x] == 0){
+                                this.maps[entity.z][entity.y][entity.x] = 0;
+                                this.moveEntity(entity, entity.x, u);
+                            }
+                        }
+                        
+                       
+                    break;
+                    case "ArrowDown":
+                        //console.log('d');
+                        let d = entity.y + 1;
+                        if (d < this.maps[entity.z].length){
+                            if(this.maps[entity.z][d][entity.x] == 0){
+                                this.maps[entity.z][entity.y][entity.x] = 0;
+                                this.moveEntity(entity, entity.x, d);
+                            }
+                        }
+                        
+                        
+                    break;
+                    default:
+                        break;
+                }
+            });
         }
     }
 }
