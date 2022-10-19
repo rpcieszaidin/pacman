@@ -40,7 +40,7 @@ pacman.Board = class {
     moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
         if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
-            
+            map.splice(x,0,map.splice(y,1));
         }
     }
 }
