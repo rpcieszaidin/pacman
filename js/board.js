@@ -1,15 +1,11 @@
 var pacman = pacman || {};
 
-pacman.PLAYER = 98;
-pacman.ENEMY = 1;
+pacman.PLAYER = 99;
+pacman.ENEMY = 98;
 
 pacman.Board = class {
     constructor() {
-        this.maps = [
-            [
-                [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
-            ]
-        ];
+        this.maps = [ [ [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0] ] ];
         this.entities = [];
     }
 
@@ -19,7 +15,11 @@ pacman.Board = class {
             let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
             this.maps[0][0][0] = player;
             this.entities.push(player);
-        } 
+        } else if (type === pacman.ENEMY) {
+            let enemy = new pacman.Ghost(1, 0, 0, pacman.ENEMY);
+            this.maps[0][1][1] = enemy;
+            this.entities.push(enemy);
+        }
     }
 
     drawBoard() {
@@ -29,9 +29,13 @@ pacman.Board = class {
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
                         console.log('P');
-                    } 
-                } else {
-                    console.log(map[i][j]);
+                    } else if (map[i][j].type === pacman.ENEMY) {
+                        console.log('E');
+                    }
+                } else if (map[i][j] == 0) {
+                    console.log("o");
+                } else if (map[i][j] == 1) {
+                    console.log("|");
                 }
             }
         }
