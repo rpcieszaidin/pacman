@@ -20,10 +20,15 @@ pacman.Board = class {
     addEntity(type) {
         if (type === pacman.PLAYER) {
             // implementar metodo posicion correcta
-            let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
+            let player = new pacman.Entity(0, 0, 0, pacman.PLAYER);
             this.maps[0][0][0] = player;
             this.entities.push(player);
-        } 
+        } else {
+            // implementar metodo posicion correcta
+            let enemy = new pacman.Entity(0, 4, 5, pacman.ENEMY);
+            this.maps[0][4][5] = enemy;
+            this.entities.push(enemy);   
+        }
     }
 
     drawBoard() {
@@ -37,7 +42,9 @@ pacman.Board = class {
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
                         tr.cells[j].appendChild(document.createTextNode('P'));
-                    } 
+                    } else {
+                        tr.cells[j].appendChild(document.createTextNode('F'));
+                    }
                 } else {
                     tr.cells[j].appendChild(document.createTextNode(map[i][j]));
                 }
@@ -60,4 +67,27 @@ pacman.Board = class {
             }
         }
     }
+
+    enemyMovements() {
+        this.interval = setInterval(() => {
+            let entity = board.entities.find(element => element.type == pacman.ENEMY);
+            switch(Math.floor(Math.random() * 4)) {
+                case 0:
+                    board.moveEntity(entity, entity.x - 1, entity.y);
+                    break;
+                case 1:
+                    board.moveEntity(entity, entity.x, entity.y - 1);
+                    break;
+                case 2:
+                    board.moveEntity(entity, entity.x, entity.y + 1);
+                    break;
+                case 3:
+                    board.moveEntity(entity, entity.x + 1, entity.y);
+                    break;
+            }
+            document.getElementById("board").remove();
+            board.drawBoard();
+        }, 500);
+    }
+
 }

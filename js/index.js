@@ -1,5 +1,6 @@
 let board = new pacman.Board();
 board.addEntity(pacman.PLAYER);
+board.addEntity(pacman.ENEMY);
 board.drawBoard();
 
 document.addEventListener("keydown", (event) => {
@@ -21,3 +22,5 @@ document.addEventListener("keydown", (event) => {
     document.getElementById("board").remove();
     board.drawBoard();
 });
+
+//board.enemyMovements();
