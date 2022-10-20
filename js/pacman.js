@@ -5,4 +5,6 @@ pacman.Pacman = class {
         this.z = z;
         this.type = type;
     }
+
+    
 }

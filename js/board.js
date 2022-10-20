@@ -41,19 +41,31 @@ pacman.Board = class {
 
     moveEntity(entity, x, y) {
         this.entities.forEach(ent => {
-            if(typeof entity == typeof ent){
+            if(entity.type == ent.type && entity.type == pacman.PLAYER){
                 console.log('1');
                 let map = this.maps[ent.z];
                 if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
-                    if(ent.x - 1 == x || ent.x + 1 == x || ent.x == x){
-                        if(ent.y - 1 == y || ent.y + 1 == y || ent.y == y){
-                            ent.y = y;
-                            ent.x = x;
-                            console.log('He llegado');
-                            /*this.maps[ent.z][ent.x][ent.y] = ent;
-                            this.board.innerHTML = '';
-                            this.board.innerHTML = this.drawBoard();*/
-                        }
+                    console.log('2');
+                    if(map[x][y] == 0){
+                        console.log('3');
+                        let a = ent.x;
+                        let b = ent.y;
+                        map[a][b] = 0;
+                        console.log(map[a][b]);
+                        ent.z = map;
+                        ent.x = x;
+                        ent.y = y;
+                        map[x][y] = ent;
+                        this.board.innerHTML = '';
+                        this.drawBoard();
+                    }
+                }
+            }else if(entity.type == ent.type && entity.type == pacman.ENEMY){
+                let map = this.maps[ent.z];
+                if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
+                    let rnd = Math.round(Math.random()*(4-1+1));
+                    switch(rnd){
+                        case 1: 
                     }
                 }
             }
