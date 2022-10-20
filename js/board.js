@@ -40,7 +40,7 @@ pacman.Board = class {
             }
         }
     }
-    moveEntity(entity, x, y) {
+    static moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
         if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
             //Esto ignora comprobaciones, habrá que implementarlas
@@ -63,7 +63,7 @@ pacman.Board = class {
                 //this.moveEntity(element, element.x+1, element.y);
             }
         });
-            //this.entities[0].movePlayer(6);
-            this.moveEntity(this.entities[0], 1, 1)
+            this.entities[0].movePlayer(6);
+            //this.moveEntity(this.entities[0], 1, 1)
     }
 }
