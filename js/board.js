@@ -24,12 +24,13 @@ pacman.Board = class {
     addEntity(type) {
         let map = this.maps[0];
         let entity = null;
+
         if (type === pacman.PLAYER) {
             entity = new pacman.Entity(0, 0, 0, pacman.PLAYER);
-            entity.saludar();
         }else if (type === pacman.ENEMY) {
             entity = new pacman.Entity(4, 5, 0, pacman.ENEMY);
         }
+        
         map[entity.x][entity.y] = entity;
         this.entities.push(entity);
     }
