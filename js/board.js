@@ -30,6 +30,7 @@ pacman.Board = class {
         }
         if (type === pacman.ENEMY) {
             //put (Math.floor(Math.random() * 2)*7); for
+            let enemy = new pacman.Pacman(())
         }
     }
 
@@ -40,7 +41,12 @@ pacman.Board = class {
                     if (this.maps[0][i][j].type === pacman.PLAYER) {
                     } 
                 } else {
-                    console.log(this.maps[0][i][j]);
+                    /*for(let i=0;i<26;i++){
+                        di.classList.add("key");
+                        di.setAttribute('id',this.converted);
+                        di.innerHTML=this.converted;
+                        this.X.appendChild("");
+                    }*/
                 }
             }
         }
@@ -48,6 +54,10 @@ pacman.Board = class {
 
     moveEntity(entity, x, y) {
         this.okmove = true;
+        if (this.maps[entity.z][y][x].type === pacman.ENEMY){
+            this.end = true;
+            this.okmove = false;
+        }
         //
         if (x < 0 || x > this.maps[entity.z][y].length || y < 0 || y > this.maps[entity.z].length) {
             this.okmove=false;
@@ -60,7 +70,7 @@ pacman.Board = class {
         }
         //Between this and the comment line above will probably be merged into 1 if, this is for testing.
         if (this.maps[entity.z][y][x].type === pacman.ENEMY){
-            //Game over.
+            this.end = true;
         }
         if (this.maps[entity.z][y][x].type === pacman.STAIRS){
             //Next level
