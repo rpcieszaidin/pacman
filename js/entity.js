@@ -4,6 +4,7 @@ pacman.Entity = class {
         this.y = y;
         this.z = z;
         this.type = type;
+        this.puntuacion = 0;
     }
 
 }

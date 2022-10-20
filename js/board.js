@@ -17,6 +17,7 @@ pacman.Board = class {
             ]
         ];
         this.entities = [];
+        this.intervalo = null;
         this.div = document.getElementById('tablero');
     }
 
@@ -29,8 +30,9 @@ pacman.Board = class {
             entity = new pacman.Entity(0, 0, 0, pacman.PLAYER);
         }else if (type === pacman.ENEMY) {
             entity = new pacman.Entity(4, 5, 0, pacman.ENEMY);
+            this.createInterval(entity);
         }
-        
+
         map[entity.x][entity.y] = entity;
         this.entities.push(entity);
     }
@@ -68,21 +70,38 @@ pacman.Board = class {
         //Cogemos el mapa en el que esta la entidad que se va a mover
         let map = this.maps[entity.z];
 
-
-        //Si está fuera de los límites no se puede añadir
+        //Comprobamos los límites del mapa
         if (!(x >= 0 && x < map.length && y >= 0 && y < map[x].length)) return false 
-        //Si ambas son diferentes no se puede añadir
+
+        //Comprobamos si se realiza mas de un movimiento
         if(!(entity.x == x || entity.y == y)) return false
-        //Si la x es diferente comprobamos que no haya cambiado mas de una casilla
+
+        //Comprobamos que el movimiento sea de solo una casilla en la x
         if(entity.x != x ){
             if(!(entity.x > x && entity.x - x == 1 || x - entity.x == 1)) return false 
         }
-        //Si la y es diferente comprobamos que no haya cambiado mas de una casilla
+
+        //Comprobamos que el movimiento sea de una sola casilla en la y
         if(entity.y != y){
             if(!(entity.y > x && entity.y - y == 1 || y - entity.y == 1)) return false 
         }
+        
+        //Comprobamos que el movimiento no lleve a un muero
+        if(map[x][y] === pacman.MURO) return false
+
 
         //Aquí solo se llegará cuando se cumplan todas las condiciones anteriores, si no, saldran devolviendo un false antes de hacer ningun cambio
+        //Ejecutamos game over si el jugador se mueve al fantasma y viceversa
+        if(map[x][y] === pacman.PLAYER && entity.type === pacman.ENEMY || map[x][y] === pacman.ENEMY && entity.type === pacman.PLAYER){
+            gameOver();
+        }
+
+        if(map[x][y] === pacman.COCO && entity.type === pacman.PLAYER){
+            entity.puntuacion ++;
+        }
+
+        
+        
         map[entity.x][entity.y] = 0;
         map[x][y] = entity;
         entity.x = x;
@@ -91,9 +110,40 @@ pacman.Board = class {
     }
 
     //Crea un intervalo que se ejecuta cada minuto
-    createInterval(){
-        let interval = setInterval( () => {
+    createInterval(entity){
+        this.intervalo = setInterval( () => {
             
+            let x;
+            let y;
+            
+            //Mientras no consiga moverse el fantasma se ejecutará este bucle
+            do{
+                let random = Math.ceil(Math.random() * 4);
+                x = entity.x;
+                y = entity.y;
+
+                switch(random){
+                    case 1:
+                        y --;
+                    break;
+
+                    case 2:
+                        x --;
+                    break;
+
+                    case 3: 
+                        y ++;
+                    break;
+
+                    case 4:
+                        x ++;
+                    break;
+                }
+                console.log(random, x, y)
+                this.moveEntity(entity, x, y)
+                this.drawBoard();
+            }while(!this.moveEntity(entity, x, y));
+
         }, 1000);
     }
 }
