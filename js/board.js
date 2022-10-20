@@ -21,11 +21,11 @@ pacman.Board = class {
     addEntity(type) {
         if (type === pacman.PLAYER) {
             // implementar metodo posicion correcta
-            let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
+            let player = new pacman.Pacman(0, 0, 0, type);
             this.maps[0][0][0] = player;
             this.entities.push(player);
         }else if(type === pacman.ENEMY){
-            let ghost = new pacman.Ghost(5, 4, 0, pacman.ENEMY);
+            let ghost = new pacman.Ghost(5, 4, 0, type);
             this.maps[0][4][5] = ghost;
             this.entities.push(ghost);
         } 
@@ -50,15 +50,25 @@ pacman.Board = class {
     }
 
     moveEntity(entity, x, y) {
-        let map = this.maps[entity.z];
-        if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
-            if(entity.x - 1 == x || entity.x + 1 == x || entity.x == x){
-                if(entity.y - 1 == y || entity.y + 1 == y || entity.y == y || map[y][x] != 1){
-                    entity.y = x;
-                    entity.x = y;
-                    console.log("funciona");
+        
+        this.entities.forEach(enti => {
+            if(entity.type == enti.type){
+                console.log("entra");
+
+                let map = this.maps[enti.z];
+                if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
+                    if(map[x][y] == 0){
+                        let a = enti.x;
+                        let b = enti.y;
+                        map[a][b] = 0;
+                        enti.x = x;
+                        enti.y = y;
+                        map[x][y] = enti;
+                        this.board.innerHTML = '';
+                        this.drawBoard();
+                    }
                 }
             }
-        }
+        });   
     }
 }
