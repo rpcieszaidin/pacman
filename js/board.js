@@ -2,7 +2,7 @@ var pacman = pacman || {};
 
 pacman.PLAYER = 98;
 pacman.ENEMY = 1;
-pacman.entities = []
+
 pacman.Board = class {
     constructor() {
         this.maps = [
@@ -10,6 +10,7 @@ pacman.Board = class {
                 [0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
             ]
         ];
+        this.entities = []
     }
 
     addEntity(type, x, y, z) {
@@ -23,27 +24,30 @@ pacman.Board = class {
                 break;
         }
         this.maps[z][y][x] = entity;
-        pacman.entities.push(entity);
+        this.entities.push(entity);
     }
 
     drawBoard() {
         let board = document.getElementById("board");
         board.innerHTML = "";
         let map = this.maps[0];
-        for (let i = 0; i < map.length; i++) {
-            for(let j = 0; j < map[i].length; j++) {
-                if (typeof map[i][j] == 'object'){
-                    if (map[i][j].type === pacman.PLAYER) {
+        map.forEach(row => {
+            row.forEach(line => {
+                if (typeof line == 'object'){
+                    if (line.type === pacman.PLAYER) {
                         board.innerHTML += "P";
-                    }else if (map[i][j].type === pacman.ENEMY) {
+                    }else if (line.type === pacman.ENEMY) {
                         board.innerHTML += "E";
                     } 
                 } else {
-                    board.innerHTML += map[i][j];
+                    board.innerHTML += line;
                 }
-            }
+            });
             board.innerHTML += "<br>";
-        }
+        });
+
+
+        
     }
 
     moveEntity(entity, x, y) {
@@ -69,7 +73,7 @@ pacman.Board = class {
     }
 
     lose(){
-        for (let entity of pacman.entities) {
+        for (let entity of this.entities) {
             if(entity.type === pacman.PLAYER){
                 entity.lose();
             }else{
