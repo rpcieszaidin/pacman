@@ -5,4 +5,15 @@ pacman.Pacman = class {
         this.z = z;
         this.type = type;
     }
+    movePlayer(direction){
+        direction
+switch (direction) {
+    case value:
+        
+        break;
+
+    default:
+        break;
+}
+    }
 }

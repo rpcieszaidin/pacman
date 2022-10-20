@@ -1,7 +1,7 @@
 var pacman = pacman || {};
 
 pacman.PLAYER = 98;
-pacman.ENEMY = 1;
+pacman.ENEMY = 20;
 
 pacman.Board = class {
     constructor() {
@@ -19,7 +19,16 @@ pacman.Board = class {
             let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
             this.maps[0][0][0] = player;
             this.entities.push(player);
-        } 
+        } else if (type === pacman.ENEMY){
+            let ghost =new pacman.Ghosts(0,4,5,pacman.ENEMY);
+            let ghost2 =new pacman.Ghosts(0,4,5,pacman.ENEMY);
+            this.maps[0][4][5]=ghost;
+            this.maps[0][4][0]=ghost2;
+            this.entities.push(ghost);
+            this.entities.push(ghost2);
+
+        }
+        
     }
 
     drawBoard() {
@@ -29,7 +38,9 @@ pacman.Board = class {
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
                         console.log('P');
-                    } 
+                    } else if(map[i][j].type === pacman.ENEMY){
+                        console.log('G');
+                    }
                 } else {
                     console.log(map[i][j]);
                 }
@@ -37,10 +48,12 @@ pacman.Board = class {
         }
     }
 
+
     moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
         if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
-            map.splice(x,0,map.splice(y,1));
+            
         }
     }
+   // setInterval(,1000);
 }

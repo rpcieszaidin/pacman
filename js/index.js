@@ -1,4 +1,5 @@
 let board = new pacman.Board();
 board.addEntity(pacman.PLAYER);
+board.addEntity(pacman.ENEMY);
 board.drawBoard();
-board.moveEntity(pacman.PLAYER,1,0);
+//board.moveEntity(pacman.PLAYER,0,1);
