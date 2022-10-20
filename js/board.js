@@ -1,7 +1,7 @@
 var pacman = pacman || {};
 
 pacman.PLAYER = 98;
-pacman.ENEMY = 1;
+pacman.ENEMY = 50;
 
 pacman.Board = class {
     constructor() {
@@ -20,12 +20,17 @@ pacman.Board = class {
 
     //Añade una entidad al juego ya sea jugador o fantasma
     addEntity(type) {
+        var map = this.maps[0];
         if (type === pacman.PLAYER) {
             // implementar metodo posicion correcta
             let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
-            this.maps[0][0][0] = player;
+            map[0][0] = player;
             this.entities.push(player);
-        } 
+        }else if (type === pacman.ENEMY) {
+            let ghost = new pacman.Ghost(4, 5, 0, pacman.ENEMY);
+            map[3, 4] = ghost;
+            this.entities.push(ghost);
+        }
     }
 
     //Dibuja en tablero en el html
@@ -43,7 +48,7 @@ pacman.Board = class {
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
                         cell.textContent = "A"
-                    }else if(typeof map[i][j] === pacman.ENEMY){
+                    }else if(map[i][j].type === pacman.ENEMY){
                         cell.textContent = "B"
                     }
                 } else {
@@ -81,5 +86,12 @@ pacman.Board = class {
         entity.x = x;
         entity.y = y;
         return true;
+    }
+
+    //Crea un intervalo que se ejecuta cada minuto
+    createInterval(){
+        let interval = setInterval(()=>{
+            console.log('hola')
+        }, 1000);
     }
 }
