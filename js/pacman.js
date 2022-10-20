@@ -5,4 +5,25 @@ pacman.Pacman = class {
         this.z = z;
         this.type = type;
     }
+
+    createEventPlayer() {
+        window.addEventListener("keyup", this.eventPlayer);
+    }
+
+    eventPlayer = (event) => {
+        switch(event.code) {
+            case "ArrowUp":
+                board.moveEntity(this, this.x, this.y - 1);
+                break;
+            case "ArrowLeft":
+                board.moveEntity(this, this.x - 1, this.y);
+                break;
+            case "ArrowDown":
+                board.moveEntity(this, this.x, this.y + 1);
+                break;
+            case "ArrowRight":
+                board.moveEntity(this, this.x + 1, this.y);
+                break;
+        }
+    }
 }
