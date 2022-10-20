@@ -26,7 +26,7 @@ pacman.Board = class {
             if(map[entity.y][entity.x] == 0){
                 this.maps[entity.z][entity.y][entity.x] = entity;
                 this.entities.push(entity);
-                this.move(entity);
+                pacman.Pacman.move(this.maps);
             }//else{
             //     console.log('La entidad no se pude generar');
             // }
@@ -93,58 +93,5 @@ pacman.Board = class {
         }
     }
 
-    move(entity){
-        if(entity.type == pacman.PLAYER){
-            document.addEventListener("keyup", (e) => {
-                switch (e.key) {
-                    case "ArrowLeft":
-                        //console.log('l');
-                        let l = entity.x - 1;
-                        if(this.maps[entity.z][entity.y][l] == 0){
-                            this.maps[entity.z][entity.y][entity.x] = 0;
-                            this.moveEntity(entity, l, entity.y);
-                        }
-                            
-                        
-                    break;
-                    case "ArrowRight":
-                        //console.log('r');
-                        let r = entity.x + 1;
-                        if(this.maps[entity.z][entity.y][r] == 0){
-                            this.maps[entity.z][entity.y][entity.x] = 0;
-                            this.moveEntity(entity, r, entity.y);
-                        }
-                        
-                    break;
-                        case "ArrowUp":
-                        //console.log('u');
-                        
-                        let u = entity.y - 1;
-                        if (u >= 0){
-                            if(this.maps[entity.z][u][entity.x] == 0){
-                                this.maps[entity.z][entity.y][entity.x] = 0;
-                                this.moveEntity(entity, entity.x, u);
-                            }
-                        }
-                        
-                       
-                    break;
-                    case "ArrowDown":
-                        //console.log('d');
-                        let d = entity.y + 1;
-                        if (d < this.maps[entity.z].length){
-                            if(this.maps[entity.z][d][entity.x] == 0){
-                                this.maps[entity.z][entity.y][entity.x] = 0;
-                                this.moveEntity(entity, entity.x, d);
-                            }
-                        }
-                        
-                        
-                    break;
-                    default:
-                        break;
-                }
-            });
-        }
-    }
+
 }
