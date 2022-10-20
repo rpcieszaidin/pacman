@@ -56,13 +56,13 @@ pacman.Board = class {
 
     moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
-        if (x >= 0 && x < map.length && y >= 0 && y < map[map.length-1].length) {
-            if (map[x][y] == 0) {
-                map[entity.x][entity.y] = 0;
-                map[x][y] = entity;
-                entity.x = x;
-                entity.y = y;
-            } else if (map[x][y] != 1) {
+        if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
+            if (map[y][x] == 0) {
+                map[entity.y][entity.x] = 0;
+                map[y][x] = entity;
+                entity.x = y;
+                entity.y = x;
+            } else if (map[y][x] != 1) {
                 
             }
         }
