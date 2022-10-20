@@ -2,6 +2,8 @@ var pacman = pacman || {};
 
 pacman.PLAYER = 98;
 pacman.ENEMY = 50;
+pacman.COCO = 0;
+pacman.MURO = 1;
 
 pacman.Board = class {
     constructor() {
@@ -20,17 +22,16 @@ pacman.Board = class {
 
     //Añade una entidad al juego ya sea jugador o fantasma
     addEntity(type) {
-        var map = this.maps[0];
+        let map = this.maps[0];
+        let entity = null;
         if (type === pacman.PLAYER) {
-            // implementar metodo posicion correcta
-            let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
-            map[0][0] = player;
-            this.entities.push(player);
+            entity = new pacman.Entity(0, 0, 0, pacman.PLAYER);
+            entity.saludar();
         }else if (type === pacman.ENEMY) {
-            let ghost = new pacman.Ghost(4, 5, 0, pacman.ENEMY);
-            map[3, 4] = ghost;
-            this.entities.push(ghost);
+            entity = new pacman.Entity(4, 5, 0, pacman.ENEMY);
         }
+        map[entity.x][entity.y] = entity;
+        this.entities.push(entity);
     }
 
     //Dibuja en tablero en el html
@@ -68,16 +69,16 @@ pacman.Board = class {
 
 
         //Si está fuera de los límites no se puede añadir
-        if (!(x >= 0 && x < map.length && y >= 0 && y < map[x].length)) { return false }
+        if (!(x >= 0 && x < map.length && y >= 0 && y < map[x].length)) return false 
         //Si ambas son diferentes no se puede añadir
-        if(!(entity.x == x || entity.y == y)){ return false}
+        if(!(entity.x == x || entity.y == y)) return false
         //Si la x es diferente comprobamos que no haya cambiado mas de una casilla
         if(entity.x != x ){
-            if(!(entity.x > x && entity.x - x == 1 || x - entity.x == 1)){ return false }
+            if(!(entity.x > x && entity.x - x == 1 || x - entity.x == 1)) return false 
         }
         //Si la y es diferente comprobamos que no haya cambiado mas de una casilla
         if(entity.y != y){
-            if(!(entity.y > x && entity.y - y == 1 || y - entity.y == 1)){ return false }
+            if(!(entity.y > x && entity.y - y == 1 || y - entity.y == 1)) return false 
         }
 
         //Aquí solo se llegará cuando se cumplan todas las condiciones anteriores, si no, saldran devolviendo un false antes de hacer ningun cambio
@@ -90,8 +91,8 @@ pacman.Board = class {
 
     //Crea un intervalo que se ejecuta cada minuto
     createInterval(){
-        let interval = setInterval(()=>{
-            console.log('hola')
+        let interval = setInterval( () => {
+            
         }, 1000);
     }
 }
