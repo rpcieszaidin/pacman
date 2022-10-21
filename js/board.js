@@ -1,7 +1,10 @@
 var pacman = pacman || {};
 
-pacman.PLAYER = 98;
-pacman.ENEMY = 1;
+pacman.BARRIER = 1;
+pacman.PELLETE = 0;
+pacman.EMPTY = 40;
+pacman.PLAYER = 20;
+pacman.ENEMY = 44;
 
 pacman.Board = class {
     constructor() {
@@ -32,13 +35,13 @@ pacman.Board = class {
     }
 
     drawBoard() {
-        let table = document.createElement("table");
-        table.setAttribute("id", "board");
+        let table = document.createElement('table');
+        table.setAttribute('id', 'board');
         let map = this.maps[0];
         for (let i = 0; i < map.length; i++) {
-            let tr = document.createElement("tr");
+            let tr = document.createElement('tr');
             for(let j = 0; j < map[i].length; j++) {
-                tr.appendChild(document.createElement("th"));
+                tr.appendChild(document.createElement('th'));
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
                         tr.cells[j].appendChild(document.createTextNode('P'));
@@ -57,36 +60,48 @@ pacman.Board = class {
     moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
         if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
-            if (map[y][x] == 0) {
-                map[entity.y][entity.x] = 0;
-                map[y][x] = entity;
+            if (map[y][x] != 1) {
+                let oldCellContent = ''; // TODO: Recuperar contenido
+                let newCellContent = entity;
+                if (entity.type == pacman.PLAYER) {
+                    if(map[y][x] == 0) {
+                        newCellContent = '';
+                    } else if(map[y][x].type == pacman.ENEMY) {
+                        newCellContent = this.entities.find(element => element.type == pacman.ENEMY);
+                        // GAME OVER
+                    }
+                } else {
+                    if(map[y][x].type == pacman.PLAYER) {
+                        // GAME OVER
+                    }
+                }
+                map[entity.y][entity.x] = oldCellContent;
+                map[y][x] = newCellContent;
                 entity.x = y;
                 entity.y = x;
-            } else if (map[y][x] != 1) {
-                
             }
         }
     }
 
     enemyMovements() {
         this.interval = setInterval(() => {
-            let entity = board.entities.find(element => element.type == pacman.ENEMY);
+            let entity = this.entities.find(element => element.type == pacman.ENEMY);
             switch(Math.floor(Math.random() * 4)) {
                 case 0:
-                    board.moveEntity(entity, entity.x - 1, entity.y);
+                    this.moveEntity(entity, entity.x - 1, entity.y);
                     break;
                 case 1:
-                    board.moveEntity(entity, entity.x, entity.y - 1);
+                    this.moveEntity(entity, entity.x, entity.y - 1);
                     break;
                 case 2:
-                    board.moveEntity(entity, entity.x, entity.y + 1);
+                    this.moveEntity(entity, entity.x, entity.y + 1);
                     break;
                 case 3:
-                    board.moveEntity(entity, entity.x + 1, entity.y);
+                    this.moveEntity(entity, entity.x + 1, entity.y);
                     break;
             }
-            document.getElementById("board").remove();
-            board.drawBoard();
+            document.getElementById('board').remove();
+            this.drawBoard();
         }, 500);
     }
 
