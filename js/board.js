@@ -21,24 +21,24 @@ pacman.Board = class {
         this.entities = [];
     }
 
-    correctPosition(entity){
+    correctPosition(entity, board){
             let map = this.maps[entity.z];
             if(map[entity.y][entity.x] == 0){
                 map[entity.y][entity.x] = entity;
                 this.entities.push(entity);
-                entity.move(this.maps, entity);
+                entity.move(this.maps, entity, board);
             }
         }
 
-    addEntity(type) {
+    addEntity(type, board) {
         let entity = null;
         if (type === pacman.PLAYER) {
             entity = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
-            this.correctPosition(entity);
+            this.correctPosition(entity, board);
         }
         if(type === pacman.ENEMY){
             let entity = new pacman.Pacman(0, 2, 0, pacman.ENEMY);
-            this.correctPosition(entity);
+            this.correctPosition(entity, board);
         }
     }
 
@@ -71,7 +71,7 @@ pacman.Board = class {
         if (x >= 0 && x < map[entity.y].length && y >= 0 && y < map.length) {
             if(map[y][x] == 0){
                 entity.x = x;
-            entity.y = y;
+                entity.y = y;
             map[entity.y][entity.x] = entity;
             while (div.firstChild) {
                 div.removeChild(div.firstChild);
