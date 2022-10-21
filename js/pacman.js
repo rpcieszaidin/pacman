@@ -1,3 +1,4 @@
+
 pacman.Pacman = class {
     constructor(x, y, z, type) {
         this.x = x;
@@ -6,34 +7,22 @@ pacman.Pacman = class {
         this.type = type;
     }
 
-
-    move(map){
-        if(entity.type == pacman.PLAYER){
+    move(map, entity){
+        if(this.type == pacman.PLAYER){
             document.addEventListener("keyup", (e) => {
+                map[this.z][this.y][this.x] = 0;
                 switch (e.key) {
                     case "ArrowLeft":
-                        //console.log('l');
-                        let l = entity.x - 1;
-                        this.maps[entity.z][entity.y][entity.x] = 0;
-                        this.moveEntity(entity, l, entity.y);
+                        board.moveEntity(entity, this.x - 1, this.y);
                     break;
                     case "ArrowRight":
-                        //console.log('r');
-                        let r = entity.x + 1;
-                        this.maps[entity.z][entity.y][entity.x] = 0;
-                        this.moveEntity(entity, r, entity.y);
+                        board.moveEntity(entity, this.x + 1, this.y);
                     break;
-                        case "ArrowUp":
-                        //console.log('u');
-                        let u = entity.y - 1;
-                        this.maps[entity.z][entity.y][entity.x] = 0;
-                        this.moveEntity(entity, entity.x, u);
+                    case "ArrowUp":
+                        board.moveEntity(entity, entity.x, this.y - 1);
                     break;
                     case "ArrowDown":
-                        //console.log('d');
-                        let d = entity.y + 1;
-                        this.maps[entity.z][entity.y][entity.x] = 0;
-                        this.moveEntity(entity, entity.x, d);
+                        board.moveEntity(entity, entity.x, this.y + 1);
                     break;
                     default:
                         break;
@@ -41,6 +30,4 @@ pacman.Pacman = class {
             });
         }
     }
-
-    
 }
