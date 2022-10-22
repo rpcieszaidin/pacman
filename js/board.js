@@ -16,9 +16,23 @@ pacman.Board = class {
                 [0, 0, 0, 1, 0, 0]
             ]
         ];
+
         this.entities = [];
-        this.intervalo = null;
-        this.div = document.getElementById('tablero');
+
+        //Este intervalo se ejecuta cada segundo, comprobando todos los enemigos presentes en el juego y ejecutará su función de movimiento con ellos si están en el mismo piso que el jugador
+        this.interval = setInterval(() => {
+            let jugador;
+            for(let valor in this.entities){
+                if(this.entities[valor].type === pacman.PLAYER){
+                    jugador = this.entities[valor];
+                }
+                if(this.entities[valor].type === pacman.ENEMY && this.entities[valor].z == jugador.z){
+                    this.ghostMovement(this.entities[valor]);
+                }
+            }
+        }, 1000);
+
+        this.div = document.getElementById('game');
     }
 
     //Añade una entidad al juego ya sea jugador o fantasma
@@ -30,7 +44,6 @@ pacman.Board = class {
             entity = new pacman.Entity(0, 0, 0, pacman.PLAYER);
         }else if (type === pacman.ENEMY) {
             entity = new pacman.Entity(4, 5, 0, pacman.ENEMY);
-            this.createInterval(entity);
         }
 
         map[entity.x][entity.y] = entity;
@@ -41,7 +54,7 @@ pacman.Board = class {
     drawBoard() {
         let map = this.maps[0];
         let tabla = document.createElement('table');
-
+        tabla.setAttribute('id', 'map');
         this.div.textContent = "";
 
         //Bucle para recorrer el mapa imprimiento los objetos
@@ -66,6 +79,15 @@ pacman.Board = class {
         this.div.appendChild(tabla);
     }
 
+    //Recibe un valor, y las posiciones, y actualiza ese puesto de la tabla
+    updateBoard(valor, x, y){
+        let htmlMap = document.getElementById('map');
+        let nodosX = htmlMap.childNodes;
+        let nodosY = nodosX[x].childNodes;
+        nodosY[y].innerHTML = valor;
+    }
+
+    //Mueve una entidad haciendo las respectivas comprobaciones
     moveEntity(entity, x, y) {
         //Cogemos el mapa en el que esta la entidad que se va a mover
         let map = this.maps[entity.z];
@@ -83,7 +105,7 @@ pacman.Board = class {
 
         //Comprobamos que el movimiento sea de una sola casilla en la y
         if(entity.y != y){
-            if(!(entity.y > x && entity.y - y == 1 || y - entity.y == 1)) return false 
+            if(!(entity.y > y && entity.y - y == 1 || y - entity.y == 1)) return false 
         }
         
         //Comprobamos que el movimiento no lleve a un muero
@@ -92,58 +114,101 @@ pacman.Board = class {
 
         //Aquí solo se llegará cuando se cumplan todas las condiciones anteriores, si no, saldran devolviendo un false antes de hacer ningun cambio
         //Ejecutamos game over si el jugador se mueve al fantasma y viceversa
-        if(map[x][y] === pacman.PLAYER && entity.type === pacman.ENEMY || map[x][y] === pacman.ENEMY && entity.type === pacman.PLAYER){
-            gameOver();
+        if(map[x][y].type === pacman.PLAYER && entity.type === pacman.ENEMY || map[x][y].type === pacman.ENEMY && entity.type === pacman.PLAYER){
+            this.gameOver();
         }
 
         if(map[x][y] === pacman.COCO && entity.type === pacman.PLAYER){
             entity.puntuacion ++;
         }
-
-        
         
         map[entity.x][entity.y] = 0;
+        this.updateBoard(0, entity.x, entity.y);
         map[x][y] = entity;
+
+        if(entity.type == pacman.PLAYER){
+            this.updateBoard('A', x, y)
+        }else{
+            this.updateBoard('B', x, y);
+        }
+
         entity.x = x;
         entity.y = y;
         return true;
     }
 
+    gameOver(){
+        clearInterval(this.interval);
+    }
+
     //Crea un intervalo que se ejecuta cada minuto
-    createInterval(entity){
-        this.intervalo = setInterval( () => {
+    ghostMovement(entity){
+        let x;
+        let y;
+        
+        //Mientras no consiga moverse el fantasma se ejecutará este bucle
+        do{
+            let random = Math.ceil(Math.random() * 4);
+            x = entity.x;
+            y = entity.y;
+
+            switch(random){
+                case 1:
+                    y --;
+                break;
+
+                case 2:
+                    x --;
+                break;
+
+                case 3: 
+                    y ++;
+                break;
+
+                case 4:
+                    x ++;
+                break;
+            }
+            console.log(random, x, y)
+            this.moveEntity(entity, x, y)
             
-            let x;
-            let y;
-            
-            //Mientras no consiga moverse el fantasma se ejecutará este bucle
-            do{
-                let random = Math.ceil(Math.random() * 4);
-                x = entity.x;
-                y = entity.y;
+        }while(!this.moveEntity(entity, x, y));
+    }
 
-                switch(random){
-                    case 1:
-                        y --;
-                    break;
-
-                    case 2:
-                        x --;
-                    break;
-
-                    case 3: 
-                        y ++;
-                    break;
-
-                    case 4:
-                        x ++;
-                    break;
-                }
-                console.log(random, x, y)
-                this.moveEntity(entity, x, y)
-                this.drawBoard();
-            }while(!this.moveEntity(entity, x, y));
-
-        }, 1000);
+    playerMovement(){
+        window.addEventListener("keydown", (event) => {
+            if (event.defaultPrevented) {
+                return;
+              }
+                  
+            let jugador = board.entities[0];
+            let x = jugador.x;
+            let y = jugador.y;
+            let colocado = false;
+        
+            switch (event.key) {
+                case "ArrowDown":
+                    board.moveEntity(jugador, ++x, y);
+                    colocado = true;
+                break;
+        
+                case "ArrowUp":
+                    board.moveEntity(jugador, --x, jugador.y);
+                    colocado = true;
+                break;
+        
+                case "ArrowLeft":
+                    board.moveEntity(jugador, x, --y);
+                    colocado = true;
+                break;
+        
+                case "ArrowRight":
+                    board.moveEntity(jugador, x, ++y);
+                    colocado = true;
+                break;
+            }
+        
+        }, 
+        true);
     }
 }
