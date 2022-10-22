@@ -51,10 +51,11 @@ pacman.Board = class {
                 console.log('1');
                 let map = this.maps[ent.z];
                 //Compruebo que el movimiento este en los limites
-                if (!(x >= 0 && x < map[y].length && y >= 0 && y < map.length)) return false
+                if ((x >= 0 && x < this.maps[ent.z][x].length || y >= 0 && y < this.maps[ent.z][x][y].length)){
+                //if (!map[x][y]) return false;
                 //Estas dos coprobaciones son para que no quiera moverse en dos direcciones a la vez
-                if(!(entity.x == x && entity.y + 1 == y || entity.x == x && entity.y -1 == y)) return false
-                if(!(entity.x == x && entity.y + 1 == y || entity.x == x && entity.y -1 == y)) return false
+                //if(!((entity.x == x && entity.y + 1 == y) || (entity.x == x && entity.y -1 == y))) return false;
+                //if(!(entity.x == x && entity.y + 1 == y || entity.x == x && entity.y -1 == y)) return false;
                 //Si pasa las comprobaciones el movimiento es corecto y se mueve
                 console.log('2');
                 if(map[x][y] == 0){
@@ -62,7 +63,6 @@ pacman.Board = class {
                     let a = ent.x;
                     let b = ent.y;
                     map[a][b] = 0;
-                    console.log(map[a][b]);
                     ent.z = map;
                     ent.x = x;
                     ent.y = y;
@@ -70,7 +70,7 @@ pacman.Board = class {
                     this.board.innerHTML = '';
                     this.drawBoard();
                 }
-                
+            }    
             }else if(entity.type == ent.type && entity.type == pacman.ENEMY){
                 let map = this.maps[ent.z];
                 if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
@@ -84,7 +84,6 @@ pacman.Board = class {
     }
 
     move(entity){
-        console.log('try');
         document.addEventListener("keyup", (e)=>{
             console.log('in');
             switch(e.key){
@@ -106,5 +105,4 @@ pacman.Board = class {
             }
         },false);
     }
-
 }
