@@ -1,0 +1,45 @@
+html, body {
+    overflow: hidden;
+    user-select: none;
+}
+
+#game {
+    position: relative;
+    height: 100%;
+}
+
+#lose {
+    width: 538px;
+    height: 580px;
+    background-color: rgba(0, 0, 0, 0.3);
+    font-family: Montserrat;
+    margin: 0 auto;
+    position: absolute;
+    left: 32.5%;
+    top: 7%;
+    visibility: hidden;
+}
+
+#message {
+    margin: 0;
+    margin-top: 10px;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: bold;
+    color: red;
+    font-size: 50px;
+}
+
+#refresh {
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 30px;
+    margin-top: 424px;
+    margin-left: 330px;
+    padding: 12px 20px 12px 20px;
+}
+
+#refresh:hover {
+    background-color: black;
+    color: white;
+}

@@ -1,80 +1,69 @@
 var pacman = pacman || {};
 
-pacman.PLAYER = 98;
-pacman.ENEMY = 1;
+pacman.PLAYER = 96;
+pacman.ENEMY = 69;
+pacman.WALL = 1;
+pacman.ROAD = 0;
 pacman.actualMap = 0;
+pacman.map = null;
 
 pacman.Board = class {
     constructor() {
         this.maps = [
             [
-                [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
+                [pacman.ROAD, pacman.ROAD, pacman.WALL, pacman.ROAD, pacman.ROAD, pacman.ROAD], 
+                [pacman.ROAD, pacman.ROAD, pacman.WALL, pacman.ROAD, pacman.ROAD, pacman.WALL], 
+                [pacman.ROAD, pacman.ROAD, pacman.ROAD, pacman.ROAD, pacman.ROAD, pacman.ROAD], 
+                [pacman.WALL, pacman.WALL, pacman.ROAD, pacman.WALL, pacman.ROAD, pacman.ROAD], 
+                [pacman.ROAD, pacman.ROAD, pacman.ROAD, pacman.WALL, pacman.ROAD, pacman.ROAD]
             ]
         ];
+        pacman.map = this.maps[pacman.actualMap];
         this.entities = [];
     }
 
-    addEntity(type) {
-        if (type === pacman.PLAYER) {
-            // implementar metodo posicion correcta
-            let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
-            player.createEventPlayer();
-            pacman.actualMap = player.z;
-            this.maps[pacman.actualMap][0][0] = player;
-            this.entities.push(player);
-        } else {
-            let ghost1 = new pacman.Ghost(pacman.actualMap, 0, 0, pacman.ENEMY);
-            this.maps[pacman.actualMap][4][0] = ghost1;
-            this.entities.push(ghost1);
-
-            let ghost2 = new pacman.Ghost(pacman.actualMap, 0, 0, pacman.ENEMY);
-            this.maps[pacman.actualMap][0][5] = ghost2;
-            this.entities.push(ghost2);
-        }
-    }
-
     drawBoard() {
-        let mapHTML = document.getElementById("game");
+        let mapHTML = document.getElementById("board");
         mapHTML.textContent = "";
 
-        let map = this.maps[pacman.actualMap];
-        for (let i = 0; i < map.length; i++) {
-            for(let j = 0; j < map[i].length; j++) {
-                if (typeof map[i][j] == 'object'){
-                    if (map[i][j].type === pacman.PLAYER) {
-                        mapHTML.innerHTML += 'X';
+        for (let i = 0; i < pacman.map.length; i++) {
+            for(let j = 0; j < pacman.map[i].length; j++) {
+                if (typeof pacman.map[i][j] == 'object'){
+                    if (pacman.map[i][j].type === pacman.PLAYER) {
+                        mapHTML.innerHTML += 'X ';
                     } else {
-                        mapHTML.innerHTML += 'A';
+                        mapHTML.innerHTML += 'A ';
                     }
                 } else {
-                    mapHTML.innerHTML += map[i][j];
+                    mapHTML.innerHTML += pacman.map[i][j] + " ";
                 }
             }
             mapHTML.innerHTML += '<br/>';
         }
     }
 
+    addEntity(type) {
+        let entity = null;
+        if (type === pacman.PLAYER) {
+            // PACMAN
+            entity = new pacman.Pacman(0, 0, 0, pacman.PLAYER, this);
+            pacman.actualMap = entity.z;
+        } else {
+            entity = new pacman.Ghost(pacman.actualMap, 5, 0, pacman.ENEMY, this, this.entities[0]);
+        }
+        pacman.map[entity.y][entity.x] = entity;
+        this.entities.push(entity);
+    }
+
     moveEntity(entity, x, y) {
-        let map = this.maps[pacman.actualMap];
-        if (y >= 0 && y < map.length && x >= 0 && x < map[y].length) {
-            if (map[y][x] != 1 && map[y][x].type != pacman.ENEMY) {
-                map[entity.y][entity.x] = 0;
-                map[y][x] = entity;
-                if (entity.type == pacman.PLAYER) {
-                    this.entities[0].x = x;
-                    this.entities[0].y = y;
-                } else {
-                    this.entities[1].move(this.entities[0].x, this.entities[0].y);
-                }
+        if (y >= 0 && y < pacman.map.length && x >= 0 && x < pacman.map[y].length) {
+            if (pacman.map[y][x] != 1 && pacman.map[y][x].type != pacman.ENEMY) {
+                pacman.map[entity.y][entity.x] = pacman.ROAD;
+                pacman.map[y][x] = entity;
+                entity.x = x;
+                entity.y = y;
             }
             this.drawBoard();
         }
-    }
-
-    initMovements() {
-        this.interval = setInterval(this.entities[1].move(this.entities[0].x, this.entities[0].y), 300);  
-    }
-    stopMovements() {
-        clearInterval(this.interval);
     }
 }

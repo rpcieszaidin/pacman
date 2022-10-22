@@ -1,9 +1,12 @@
 pacman.Pacman = class {
-    constructor(x, y, z, type) {
+    constructor(z, x, y, type, board) {
+        this.z = z;
         this.x = x;
         this.y = y;
-        this.z = z;
         this.type = type;
+        this.board = board;
+        this.direction = "";
+        this.createEventPlayer();
     }
 
     createEventPlayer() {
@@ -13,16 +16,20 @@ pacman.Pacman = class {
     eventPlayer = (event) => {
         switch(event.code) {
             case "ArrowUp":
-                board.moveEntity(this, this.x, this.y - 1);
+                this.board.moveEntity(this, this.x, this.y-1);
+                this.direction = "up";
                 break;
             case "ArrowLeft":
-                board.moveEntity(this, this.x - 1, this.y);
+                this.board.moveEntity(this, this.x-1, this.y);
+                this.direction = "left";
                 break;
             case "ArrowDown":
-                board.moveEntity(this, this.x, this.y + 1);
+                this.board.moveEntity(this, this.x, this.y+1);
+                this.direction = "down";
                 break;
             case "ArrowRight":
-                board.moveEntity(this, this.x + 1, this.y);
+                this.board.moveEntity(this, this.x+1, this.y);
+                this.direction = "right";
                 break;
         }
     }

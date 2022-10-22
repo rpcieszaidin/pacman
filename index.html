@@ -5,9 +5,16 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>PacMan</title>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div id="game" style="text-align: center; font-size: 40px;"></div>
+        <div id="game">
+            <div id="board" style="font-family: monospace; margin-top: 8%; text-align: center; font-size: 70px;"></div>
+        </div>
+        <div id="lose">
+            <p id="message">GAME OVER</p>
+            <button id="refresh" onClick="window.location.reload()">Refresh</button>
+        </div>
         <script src="js/board.js"></script>
         <script src="js/pacman.js"></script>
         <script src="js/ghost.js"></script>
