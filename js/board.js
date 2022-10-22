@@ -32,6 +32,15 @@ pacman.Board = class {
             }
         }, 1000);
 
+        
+        this.controller = new AbortController();
+        //Añadimos el eventListener de las teclas del jugador
+        addEventListener("keydown", (event) => {
+            this.playerMovement(event);
+        }, 
+        {signal: this.controller.signal}
+        );
+
         this.div = document.getElementById('game');
     }
 
@@ -139,6 +148,7 @@ pacman.Board = class {
 
     gameOver(){
         clearInterval(this.interval);
+        this.controller.abort();
     }
 
     //Crea un intervalo que se ejecuta cada minuto
@@ -175,40 +185,33 @@ pacman.Board = class {
         }while(!this.moveEntity(entity, x, y));
     }
 
-    playerMovement(){
-        window.addEventListener("keydown", (event) => {
-            if (event.defaultPrevented) {
-                return;
-              }
-                  
-            let jugador = board.entities[0];
-            let x = jugador.x;
-            let y = jugador.y;
-            let colocado = false;
-        
-            switch (event.key) {
-                case "ArrowDown":
-                    board.moveEntity(jugador, ++x, y);
-                    colocado = true;
-                break;
-        
-                case "ArrowUp":
-                    board.moveEntity(jugador, --x, jugador.y);
-                    colocado = true;
-                break;
-        
-                case "ArrowLeft":
-                    board.moveEntity(jugador, x, --y);
-                    colocado = true;
-                break;
-        
-                case "ArrowRight":
-                    board.moveEntity(jugador, x, ++y);
-                    colocado = true;
-                break;
+    //Movimiento del jugador
+    playerMovement(event){
+        if (event.defaultPrevented) {
+            return;
             }
-        
-        }, 
-        true);
+                
+        let jugador = board.entities[0];
+        let x = jugador.x;
+        let y = jugador.y;
+    
+        switch (event.key) {
+            case "ArrowDown":
+                board.moveEntity(jugador, ++x, y);
+            break;
+    
+            case "ArrowUp":
+                board.moveEntity(jugador, --x, jugador.y);
+            break;
+    
+            case "ArrowLeft":
+                board.moveEntity(jugador, x, --y);
+            break;
+    
+            case "ArrowRight":
+                board.moveEntity(jugador, x, ++y);
+            break;
+        }
+
     }
 }
