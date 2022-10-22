@@ -1,8 +1,8 @@
 var pacman = pacman || {};
-
-pacman.PLAYER = 98;
-pacman.ENEMY = 1;
-
+pacman.PLAYER = 9;
+pacman.ENEMY = 3;
+pacman.PATH = 0;
+pacman.WALL = 1;
 pacman.Board = class {
     constructor() {
         this.maps = [
@@ -13,33 +13,35 @@ pacman.Board = class {
         this.entities = [];
     }
     addEntity(type) {
-        if (type === pacman.PLAYER) {
-            // implementar metodo posicion correcta
-            let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
-            this.maps[0][0][0] = player;
-            this.entities.push(player);
-        } else if(type === pacman.ENEMY){
-            let ghost = new pacman.Ghost(3, 3, 0, pacman.ENEMY);
-            this.maps[0][3][3] = ghost;
-            this.entities.push(ghost);
+        let entity = null;
+        //TODO implementar posicionamiento ¿aleatorio? comprobando posiciones libres y de personaje
+        if (type === pacman.PLAYER) 
+            entity = new pacman.Entity(0, 0, 0, pacman.PLAYER);
+         else if(type === pacman.ENEMY)
+            entity = new pacman.Entity(0, 3, 3, pacman.ENEMY);
+        this.maps[0][entity.x][entity.z] = entity;
+            this.entities.push(entity);
+    }
+    createBoard(){
+        //TODO implementarlo en un foreach que funcione
+        for (let i = 0; i < this.maps[0].length; i++) {
+            for(let j = 0; j < this.maps[0][i].length; j++) {
+                if(this.maps[0][i][j] == 0)   
+                    this.maps[0][i][j] = new pacman.Entity(0, i, j,pacman.PATH);
+                else  
+                    this.maps[0][i][j] = new pacman.Entity(0, i, j, pacman.WALL);
+            }
         }
     }
     drawBoard() {
         let map = this.maps[0];
-        for (let i = 0; i < map.length; i++) {
-            for(let j = 0; j < map[i].length; j++) {
-                if (typeof map[i][j] == 'object'){
-                    if (map[i][j].type === pacman.PLAYER) {
-                        console.log('P');
-                    } else{
-                        console.log('E');
-                    }
-                } else {
-                    console.log(map[i][j]);
-                }
-            }
-        }
+        map.forEach(element => {
+            element.forEach(theel =>{
+                console.log(theel.type);
+            })  
+        })
     }
+    //TODO Arreglar este desastre de forma general
     static moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
         if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
@@ -48,22 +50,7 @@ pacman.Board = class {
             entity.x=x;
             entity.y=y;
             this.maps[entity.z][x][y] = entity;
-            //comprobacion por consola de las coordenadas del objeto
-            console.log("coordenada x " + entity.x);
-            console.log("coordenada y " + entity.y);
         }
         this.drawBoard();
-    }    
-    //metodo de prueba de movimiento
-    //BORRAR MÁS ADELANTE!!
-    moveTest(){
-        this.entities.forEach(element => {
-            if(element.type == pacman.ENEMY){
-                //implementar movimiento enemigo
-                //this.moveEntity(element, element.x+1, element.y);
-            }
-        });
-            this.entities[0].movePlayer(6);
-            //this.moveEntity(this.entities[0], 1, 1)
     }
 }
