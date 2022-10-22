@@ -1,0 +1,1 @@
+No consigo entender por qué la línea 54 me da error de "undefined", he preobado varias formas y no sé.
