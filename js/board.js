@@ -1,7 +1,7 @@
 var pacman = pacman || {};
 
 pacman.PLAYER = 98;
-pacman.ENEMY = 1;
+pacman.ENEMY = 35;
 pacman.STAIRS = 63;
 
 pacman.Board = class {
@@ -24,32 +24,53 @@ pacman.Board = class {
 
     addEntity(type) {
         if (type === pacman.PLAYER) {
-            let player = new pacman.Pacman(0, 4, 3, pacman.PLAYER);
+            let player = new pacman.Entity(0, 4, 3, pacman.PLAYER);
             this.maps[0][4][3] = player;
             this.entities.push(player);
         }
         if (type === pacman.ENEMY) {
-            //put (Math.floor(Math.random() * 2)*7); for
-            let enemy = new pacman.Pacman(())
+            let enemy = new pacman.Entity(0,this.rannumer(),this.rannumer(), pacman.ENEMY)
         }
     }
 
-    drawBoard() {
-        for (let i = 0; i < this.maps[0].length; i++) {
+    rannumer(){
+        return (Math.floor(Math.random() * 2)*7);
+    }
+
+    drawBoard(level) {
+        /*for (let i = 0; i < this.maps[0].length; i++) {
             for(let j = 0; j < this.maps[0][i].length; j++) {
                 if (typeof this.maps[0][i][j] == 'object'){
                     if (this.maps[0][i][j].type === pacman.PLAYER) {
                     } 
                 } else {
-                    /*for(let i=0;i<26;i++){
+                    for(let i=0;i<26;i++){
                         di.classList.add("key");
                         di.setAttribute('id',this.converted);
                         di.innerHTML=this.converted;
                         this.X.appendChild("");
-                    }*/
+                    }
                 }
             }
-        }
+        }*/
+        let game = document.getElementById("game");
+        let trial = document.createElement("tr");
+        trial.classList("row");
+        trial.innerHTML("X");
+        game.appendChild(trial);
+        /*for (let height of this.maps[level].length){
+            //let numb = 0;
+            let row = document.createElement("tr");
+            row.classList("row");
+            for (let width of this.maps[level][height].length){
+                let column = document.createElement("td");
+                column.classList.add("column");
+                column.innerHTML=this.maps[level][height][width];
+                row.appendChild(column)
+            }
+            row.innerHTML="x";
+            game.appendChild(row);
+        }*/
     }
 
     moveEntity(entity, x, y) {
