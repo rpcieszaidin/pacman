@@ -15,6 +15,11 @@ pacman.Board = class {
         this.entities = [];
         this.currentMap = 0;
         this.board = document.querySelector('.board');
+        this.lose = document.getElementById('lose');
+    }
+
+    setTimer(timer) {
+        this.timer = timer;
     }
 
     getCurrentMap() {
@@ -54,9 +59,9 @@ pacman.Board = class {
                 let div = document.createElement('div');
                 if (typeof column == 'object') {
                     if (column.type === pacman.PLAYER) 
-                        div.innerHTML = 'P';
+                        div.innerHTML = 'X';
                     else if (column.type === pacman.ENEMY)
-                        div.innerHTML = 'E';
+                        div.innerHTML = 'A';
                 } else 
                     div.innerHTML = column;
                 
@@ -73,31 +78,36 @@ pacman.Board = class {
         if (x >= 0 && x < limitX && y >= 0 && y < limitY) {
             if (entity.type === pacman.PLAYER && map[x][y] === pacman.ROAD) 
                 this.updatePositions(map, entity, x, y);
-            else if (entity.type === pacman.ENEMY) {
-                if (map[x][y] === pacman.ROAD || map[x][y] === pacman.PLAYER)
+            else if (entity.type === pacman.ENEMY && map[x][y] !== pacman.WALL) {
                     this.updatePositions(map, entity, x, y);
-
-                if (map[x][y] === pacman.PLAYER)
-                    console.log('lose');
+                    this.checkLose(map);
             }
         }
     }
 
     updatePositions(map, entity, x, y) {
-        console.log(entity.x, entity.y, x, y);
         map[entity.x][entity.y] = 0;
         this.board.children[entity.x].children[entity.y].innerHTML = 0;
         [entity.x, entity.y] = [x, y];
         map[x][y] = entity;
 
         if (entity.type === pacman.PLAYER)
-            this.board.children[x].children[y].innerHTML = 'P';
+            this.board.children[x].children[y].innerHTML = 'X';
         else if (entity.type === pacman.ENEMY)
-            this.board.children[x].children[y].innerHTML = 'E';
+            this.board.children[x].children[y].innerHTML = 'A';
     }
 
     getBoardLimits(board) {
         return [board.length, board[0].length];
+    }
+
+    checkLose(map) {
+        let player = this.getPacman();
+        if (map[player.x][player.y] != player) {
+            player.removeListenerMove();
+            this.timer.stop();
+            this.lose.style.display = 'flex';
+        }
     }
 
 }

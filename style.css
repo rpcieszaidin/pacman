@@ -1,13 +1,19 @@
+@font-face {
+    font-family: pacman;
+    src: url(pacman.ttf);
+}
+
 html, body {
     height: 800px;
     width: 100%;
     margin: 0;
     padding: 0;
+    font-family: pacman;
 }
 
 .board {
     width: 100%;
-    height: 100%;
+    height: 450px;
     font-size: 10px;
     display: flex;
     flex-direction: column;
@@ -20,9 +26,15 @@ html, body {
 }
 
 .row > div {
-    width: 50px;
-    height: 50px;
-    font-size: 30px;
+    width: 80px;
+    height: 80px;
+    font-size: 50px;
     padding: 5px;
     text-align: center;
+}
+
+h4 {
+    display: none;
+    justify-content: center;
+    font-size: 25px;
 }

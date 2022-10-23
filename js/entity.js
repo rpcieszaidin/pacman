@@ -44,10 +44,10 @@ pacman.Entity = class {
             case 'right':
                 this.board.moveEntity(this, this.x, this.y + 1);
                 break;
-            case 'left':
+            case 'down':
                 this.board.moveEntity(this, this.x + 1, this.y);
                 break;
-            case 'down':
+            case 'left':
                 this.board.moveEntity(this, this.x, this.y - 1);
                 break;
         }
@@ -72,6 +72,7 @@ pacman.Entity = class {
 
         if ((this.y - 1) >= 0) 
             if (map[this.x][this.y - 1] != pacman.WALL) options.push('left');
+
         
 
         return options;
