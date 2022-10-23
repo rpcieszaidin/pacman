@@ -26,6 +26,7 @@
 }
 .wall{
     color:blue;
+    background-color: blue;
 }
 .ghost{
     color: red;

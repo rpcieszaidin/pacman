@@ -40,7 +40,7 @@ pacman.Board = class {
             for(let j = 0; j < map[i].length; j++) {
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
-                        tab.innerHTML +="<div class="+'pacman'+">·</div>";
+                        tab.innerHTML +="<div class="+'pacman'+">·</div>";//pacman
                     }else if(map[i][j].type === pacman.ENEMY){
                         tab.innerHTML +="<div class="+'ghost'+">"+'G'+"</div>";
                     }
