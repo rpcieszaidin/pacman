@@ -6,3 +6,4 @@ board.drawBoard();
 player.addListenerMove();
 timer.init();
 board.setTimer(timer);
+board.setRestartBtn();

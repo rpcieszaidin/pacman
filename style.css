@@ -38,3 +38,17 @@ h4 {
     justify-content: center;
     font-size: 25px;
 }
+
+.restart-btn {
+    margin: 50px auto;
+    width: 100px;
+    height: 50px;
+    background-color: rgb(255, 166, 0);
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+
+.restart-btn:hover {
+    cursor: pointer;
+}

@@ -16,6 +16,11 @@ pacman.Board = class {
         this.currentMap = 0;
         this.board = document.querySelector('.board');
         this.lose = document.getElementById('lose');
+        this.restart = document.querySelector('.restart-btn');
+    }
+
+    setRestartBtn() {
+        this.restart.addEventListener('click', () => window.location.reload());
     }
 
     setTimer(timer) {
@@ -28,6 +33,10 @@ pacman.Board = class {
 
     getMaps() {
         return this.maps;
+    }
+
+    getBoardLimits(board) {
+        return [board.length, board[0].length];
     }
 
     getPacman() {
@@ -97,10 +106,6 @@ pacman.Board = class {
             this.board.children[x].children[y].innerHTML = 'A';
     }
 
-    getBoardLimits(board) {
-        return [board.length, board[0].length];
-    }
-
     checkLose(map) {
         let player = this.getPacman();
         if (map[player.x][player.y] != player) {
@@ -109,5 +114,4 @@ pacman.Board = class {
             this.lose.style.display = 'flex';
         }
     }
-
 }
