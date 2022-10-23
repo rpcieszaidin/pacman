@@ -3,6 +3,7 @@ var pacman = pacman || {};
 pacman.PLAYER = 98;
 pacman.ENEMY = 90;
 
+
 pacman.Board = class {
     constructor() {
         this.maps = [
@@ -21,24 +22,23 @@ pacman.Board = class {
         this.entities = [];
     }
 
-    correctPosition(entity, board){
-            let map = this.maps[entity.z];
-            if(map[entity.y][entity.x] == 0){
-                map[entity.y][entity.x] = entity;
-                this.entities.push(entity);
-                entity.move(this.maps, entity, board);
-            }
+    correctPosition(entity){
+        let map = this.maps[entity.z];
+        if(map[entity.y][entity.x] == 0){
+            map[entity.y][entity.x] = entity;
+            this.entities.push(entity);
+            entity.move(this.maps, entity, this);
         }
+    }
 
-    addEntity(type, board) {
+    addEntity(type, x, y ,z) {
         let entity = null;
         if (type === pacman.PLAYER) {
-            entity = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
-            this.correctPosition(entity, board);
-        }
-        if(type === pacman.ENEMY){
-            let entity = new pacman.Pacman(0, 2, 0, pacman.ENEMY);
-            this.correctPosition(entity, board);
+            entity = new pacman.Pacman(x, y, z, pacman.PLAYER);
+            this.correctPosition(entity);
+        }else{
+            entity = new pacman.Pacman(x, y, z, pacman.ENEMY);
+            this.correctPosition(entity);
         }
     }
 
@@ -70,9 +70,10 @@ pacman.Board = class {
         let map = this.maps[entity.z];
         if (x >= 0 && x < map[entity.y].length && y >= 0 && y < map.length) {
             if(map[y][x] == 0){
+                map[entity.y][entity.x] = 0;
                 entity.x = x;
                 entity.y = y;
-            map[entity.y][entity.x] = entity;
+            map[y][x] = entity;
             while (div.firstChild) {
                 div.removeChild(div.firstChild);
             }  
