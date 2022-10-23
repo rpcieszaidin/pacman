@@ -1,8 +1,8 @@
 pacman.Entity = class {
-    constructor(x,y,z,type) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    constructor(type) {
+        this.x;
+        this.y;
+        this.z;
         this.type = type;
     }
     //TODO Esto es inutil bajo la idea actual del programa
