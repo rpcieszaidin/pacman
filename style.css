@@ -1,0 +1,32 @@
+
+#tab{
+    width: 700px;
+    height: 540px;
+    text-align: center;
+    font-size: 37px;
+    border: 1px solid black;
+    position: absolute;
+    top: 50px;
+    left: 300px;
+    background-color: black;
+}
+#tab div{
+    width: 40px;
+    height: 40px;
+    margin: 30px;
+    display: inline-block;
+}
+.star{
+    color: white;
+}
+.pacman{
+    background: radial-gradient(#F1D76B, #F1C71C);
+    color:#f8d549;
+    border-radius: 50%;
+}
+.wall{
+    color:blue;
+}
+.ghost{
+    color: red;
+}
