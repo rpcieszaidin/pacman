@@ -10,21 +10,25 @@ pacman.Entity = class {
     movePacman = (e) => {
         switch (e.key) {
             case 'ArrowUp':
-                this.board.moveEntity(this, this.x--, this.y);
+                this.board.moveEntity(this, this.x - 1, this.y);
                 break;
             case 'ArrowRight':
-                this.board.moveEntity(this, this.x, this.y++);
+                this.board.moveEntity(this, this.x, this.y + 1);
                 break;
             case 'ArrowDown':
-                this.board.moveEntity(this, this.x++, this.y);
+                this.board.moveEntity(this, this.x + 1, this.y);
                 break;
             case 'ArrowLeft':
-                this.board.moveEntity(this, this.x, this.y--);
+                this.board.moveEntity(this, this.x, this.y - 1);
                 break;
         }
     }
 
     addListenerMove() {
         document.addEventListener('keyup', this.movePacman);
+    }
+
+    removeListenerMove() {
+        document.removeEventListener('keyup', this.movePacman);
     }
 }

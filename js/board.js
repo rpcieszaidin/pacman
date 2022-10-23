@@ -24,7 +24,7 @@ pacman.Board = class {
         } else if (type === pacman.ENEMY) {
             entity = new pacman.Entity(0, 0, 0, pacman.ENEMY, this);
         }
-        this.maps[entity.x][entity.y][entity.z] = entity;
+        this.maps[entity.z][entity.y][entity.x] = entity;
         this.entities.push(entity);
 
         return entity;
@@ -55,21 +55,20 @@ pacman.Board = class {
     }
 
     moveEntity(entity, x, y) {
-        console.log(x, y);
         let map = this.maps[entity.z];
-        if (x >= 0 && x < map[y].length && y >= 0 && y < map.length) {
+        let [limitX, limitY] = this.setBoardLimits(map);
+        if (x >= 0 && x < limitX && y >= 0 && y < limitY) {
             if (map[x][y] == pacman.ROAD) {
                 map[entity.x][entity.y] = 0;
                 this.board.children[entity.x].children[entity.y].innerHTML = 0;
+                [entity.x, entity.y] = [x, y];
                 map[x][y] = entity;
                 this.board.children[x].children[y].innerHTML = 'P';
             }
         }
-        // this.render();
     }
 
-    render() {
-        this.board.textContent = '';
-        this.drawBoard();
+    setBoardLimits(board) {
+        return [board.length, board[0].length];
     }
 }
