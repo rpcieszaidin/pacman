@@ -16,15 +16,12 @@ pacman.Board = class {
         this.board = document.querySelector('.board');
     }
 
-    addEntity(type) {
+    addEntity(y, x, z, type) {
         let entity;
-        if (type === pacman.PLAYER) {
-            entity = new pacman.Entity(0, 0, 0, pacman.PLAYER, this);
+        console.log(y, x, z);
+        entity = new pacman.Entity(y, x, z, type, this);
 
-        } else if (type === pacman.ENEMY) {
-            entity = new pacman.Entity(0, 0, 0, pacman.ENEMY, this);
-        }
-        this.maps[entity.z][entity.y][entity.x] = entity;
+        this.maps[z][x][y] = entity;
         this.entities.push(entity);
 
         return entity;

@@ -1,4 +1,5 @@
 let board = new pacman.Board();
-let entity = board.addEntity(pacman.PLAYER);
+let player = board.addEntity(0, 0, 0, pacman.PLAYER);
+let enemy = board.addEntity(5, 4, 0, pacman.ENEMY);
 board.drawBoard();
-entity.addListenerMove();
+player.addListenerMove();
