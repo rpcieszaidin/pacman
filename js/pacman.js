@@ -1,5 +1,6 @@
 
 pacman.Pacman = class {
+    
     constructor(x, y, z, type) {
         this.x = x;
         this.y = y;
@@ -18,34 +19,54 @@ pacman.Pacman = class {
                         table.moveEntity(entity, this.x + 1, this.y);
                     break;
                     case "ArrowUp":
-                        table.moveEntity(entity, entity.x, this.y - 1);
+                        table.moveEntity(entity, this.x, this.y - 1);
                     break;
                     case "ArrowDown":
-                        table.moveEntity(entity, entity.x, this.y + 1);
+                        table.moveEntity(entity, this.x, this.y + 1);
                     break;
-                    default:
-                        break;
                 }
             });
-        }else{
-            
+        }else{ 
         this.ghost(map, entity, table);
-            
         }
     }
 
-    ghost(map, entity, table){
-        
+    ghost(maps, entity, table){
+
         let interval = setInterval(movement, 1000);
-        
+    
         function movement(){
-
+            let positions = [];
+            let index = 0;
+            let map = maps[entity.z];
+            if (entity.x - 1 >= 0) {
+                if (map[entity.y][entity.x - 1] == 0)  {
+                    positions[index] = [entity.x - 1, entity.y]
+                    index ++;
+                }
+            }
+            if (entity.x + 1 < map[entity.y].length) {
+                if (map[entity.y][entity.x + 1] == 0){
+                    positions[index] = [entity.x + 1, entity.y]
+                index ++;
+                } 
+            }
+            if (entity.y + 1 < map.length) {
+                if (map[entity.y + 1][entity.x] == 0){
+                    positions[index] = [entity.x, entity.y + 1]
+                    index ++;
+                }
+            }
+            if (entity.y - 1 >= 0) {
+                if (map[entity.y - 1][entity.x] == 0){
+                    positions[index] = [entity.x, entity.y - 1]
+                    index ++;
+                }
+            }
+            let move = Math.floor(Math.random() * positions.length);
+            console.log(move);
+            table.moveEntity(entity, positions[move][0],positions[move][1]);
         }
-            
 
     }
-
-
-
-
 }

@@ -33,6 +33,7 @@ pacman.Board = class {
 
     addEntity(type, x, y ,z) {
         let entity = null;
+        this.end(entity);
         if (type === pacman.PLAYER) {
             entity = new pacman.Pacman(x, y, z, pacman.PLAYER);
             this.correctPosition(entity);
@@ -79,6 +80,21 @@ pacman.Board = class {
             }  
             this.drawBoard();
             }
+
         }
     }
+
+    end(){
+        let but = document.getElementById('but');
+        but.addEventListener("click", restart);
+        function restart(){
+            window.location.reload();
+
+        }
+    }
+
+
+
+
+
 }
