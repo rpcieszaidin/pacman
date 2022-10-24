@@ -5,6 +5,7 @@ pacman.BARRIER = 1;
 pacman.EMPTY = 44;
 pacman.PLAYER = 20;
 pacman.ENEMY = 40;
+pacman.PORTAL = 2;
 
 pacman.Board = class {
     constructor() {
@@ -14,13 +15,21 @@ pacman.Board = class {
                 [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
                 [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+                [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2]
+            ],
+            [
+                [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
+                [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 2]
             ]
         ];
         this.entities = [];
         this.oldCellContent = pacman.PELLET;
         this.interval = null;
         this.isGameFinished = false;
+        this.numMap = 0;
     }
 
     startGame() {
@@ -28,8 +37,10 @@ pacman.Board = class {
         button.setAttribute("id", "btStart");
         button.appendChild(document.createTextNode("INICIAR PARTIDA"));
         document.getElementById("message").appendChild(button);
-        this.addEntity(pacman.PLAYER);
-        this.addEntity(pacman.ENEMY);
+        this.addEntity(pacman.PLAYER, 0, 0, 0);
+        this.addEntity(pacman.PLAYER, 14, 4, 1);
+        this.addEntity(pacman.ENEMY, 14, 0, 0);
+        this.addEntity(pacman.ENEMY, 0, 0, 1);
         this.drawBoard();
         button.onclick = () => {
             document.getElementById("btStart").setAttribute("hidden", "hidden");
@@ -53,15 +64,15 @@ pacman.Board = class {
         }
     }
 
-    addEntity(type) {
-        let map = this.maps[0];
+    addEntity(type, x, y, z) {
+        let map = this.maps[z];
         let entity = null;
         switch(type) {
             case pacman.PLAYER: 
-                entity = new pacman.Entity(0, 0, 0, pacman.PLAYER);
+                entity = new pacman.Entity(x, y, z, pacman.PLAYER);
                 break;
             case pacman.ENEMY:
-                entity = new pacman.Entity(14, 4, 0, pacman.ENEMY);
+                entity = new pacman.Entity(x, y, z, pacman.ENEMY);
                 break;
         }
         map[entity.y][entity.x] = entity;
@@ -82,6 +93,9 @@ pacman.Board = class {
             case 3:
                 this.moveEntity(entity, entity.x + 1, entity.y);
                 break;
+            case 4:
+                this.changeMap();
+                break;
         }
         document.getElementById("board").remove();
         this.drawBoard();
@@ -89,7 +103,7 @@ pacman.Board = class {
 
     playerMovements() {
         document.addEventListener("keydown", (event) => {
-            if (!this.isGameFinished) {
+            if(!this.isGameFinished) {
                 let move;
                 switch(event.key.toLowerCase()) {
                     case "w":
@@ -104,26 +118,29 @@ pacman.Board = class {
                     case "d":
                         move = 3;
                         break;
+                    case "q":
+                        move = 4;
+                        break;
                 }
-                this.entityMovements(this.entities.find(element => element.type == pacman.PLAYER), move);
+                this.entityMovements(this.entities.find(element => element.type == pacman.PLAYER && element.z == this.numMap), move);
             }
         });
     }
 
     enemyMovements() {
         this.interval = setInterval(() => {
-            this.entityMovements(this.entities.find(element => element.type == pacman.ENEMY)
-                                 , Math.floor(Math.random() * 4));
+            this.entityMovements(this.entities.find(element => element.type == pacman.ENEMY 
+                && element.z == this.numMap), Math.floor(Math.random() * 4));
         }, 500);
     }
 
     moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
-        if (x >= 0 && x < map[map.length-1].length && y >= 0 && y < map.length) {
+        if(x >= 0 && x < map[map.length-1].length && y >= 0 && y < map.length) {
             let oldCellContent, cellContent = map[y][x];
-            if (cellContent != pacman.BARRIER) {
+            if(cellContent != pacman.BARRIER) {
                 let newCellContent = entity;
-                if (entity.type == pacman.PLAYER) {
+                if(entity.type == pacman.PLAYER) {
                     oldCellContent = pacman.EMPTY;
                     if(cellContent.type == pacman.ENEMY) {
                         newCellContent = this.entities.find(element => element.type == pacman.ENEMY);
@@ -149,30 +166,36 @@ pacman.Board = class {
     drawBoard() {
         let table = document.createElement("table");
         table.setAttribute("id", "board");
-        let map = this.maps[0];
-        for (let i = 0; i < map.length; i++) {
+        let map = this.maps[this.numMap];
+        for(let i = 0; i < map.length; i++) {
             let tr = document.createElement("tr");
             for(let j = 0; j < map[i].length; j++) {
                 let th = document.createElement("th");
                 tr.appendChild(th);
                 let cellContent = null;
-                if (typeof map[i][j] == 'object'){
-                    if (map[i][j].type === pacman.PLAYER) {
+                if(typeof map[i][j] == 'object'){
+                    if(map[i][j].type === pacman.PLAYER) {
                         cellContent = 'O';
                     } else {
                         cellContent = 'A';
                     }
                 } else {
-                    switch (map[i][j]) {
+                    switch(map[i][j]) {
                         case pacman.PELLET:
                             cellContent = 'X';
                             break;
                         case pacman.BARRIER:
-                            cellContent = '2    ';
+                            cellContent = '2';
                             break;
                         case pacman.EMPTY:
                             cellContent = 'G';
                             break;
+                        case pacman.PORTAL:
+                            cellContent = 'S';
+                            break;
+                    }
+                    if(i == 4 && j == 14) {
+                        if(cellContent != 'S') cellContent = 'S';
                     }
                 }
                 tr.cells[j].appendChild(document.createTextNode(cellContent));
@@ -185,13 +208,30 @@ pacman.Board = class {
 
     countPellets() {
         let numPellets = 0;
-        let map = this.maps[0];
-        for (let i = 0; i < map.length; i ++) {
-            for(let j = 0; j < map[i].length;j++) {
-                if (map[i][j] == pacman.PELLET) numPellets++;
+        for(let i = 0; i < this.maps.length; i ++) {
+            for(let j = 0; j < this.maps[i].length;j++) {
+                for(let k = 0; k < this.maps[i][j].length; k++) {
+                    if(this.maps[i][j][k] == pacman.PELLET) numPellets++;
+                }
             }
         }
         return numPellets;
+    }
+
+    changeMap() {
+        let player = this.entities.find(element => element.type == pacman.PLAYER && element.z == this.numMap);
+        if(player.x == 14 && player.y == 4) {
+            if (this.numMap == 0) {
+                this.numMap = 1;
+            } else {
+                this.numMap = 0;
+            }
+            clearInterval(this.interval);
+            document.getElementById("board").remove();
+            this.drawBoard();
+            this.enemyMovements();
+            this.oldCellContent = pacman.PELLET;
+        }
     }
 
 }
