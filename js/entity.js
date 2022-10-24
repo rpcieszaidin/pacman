@@ -6,7 +6,7 @@ pacman.Entity = class {
         this.type = type;
     }
     //TODO Esto es inutil bajo la idea actual del programa
-    movePlayer(num){
+/*    movePlayer(num){
         switch (num) {
             case 8:
                 Board.moveEntity(Board.entities[0], this.x+1, this.y);
@@ -19,6 +19,6 @@ pacman.Entity = class {
                 Board.moveEntity(Board.entities[0], this.x, this.y+1);
             default:
                 break;
-        }  
+        }
     }
-}
+*/}
