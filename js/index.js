@@ -1,7 +1,8 @@
 let board = new pacman.Board();
 board.addEntity(pacman.PLAYER);
-board.addEntity(pacman.GHOST);
+board.addEntity(pacman.ENEMY);
 board.drawBoard();
-let player = new pacman.Pacman(0,0,0, pacman.PLAYER);
-board.moveEntity(player, 0, 1);
-board.moveEntity(player, 1, 1);
+let player = new pacman.Entity(0, 0, 0, pacman.PLAYER);
+board.move(player);
+let enemy = new pacman.Entity(4, 5, 0, pacman.ENEMY);
+board.move(enemy);
