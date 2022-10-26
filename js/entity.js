@@ -1,4 +1,4 @@
-pacman.Pacman = class {
+pacman.Entity = class {
     constructor(x, y, z, type) {
         this.x = x;
         this.y = y;
