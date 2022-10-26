@@ -16,7 +16,6 @@ pacman.Pacman = class {
     eventPlayer = (event) => {
         switch(event.code) {
             case "ArrowUp":
-                console.log("up");
                 this.board.moveEntity(this, this.x, this.y-1);
                 break;
             case "ArrowLeft":
