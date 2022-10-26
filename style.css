@@ -1,6 +1,7 @@
 html, body {
     overflow: hidden;
     user-select: none;
+    background-color: rgb(58, 56, 56);
 }
 
 #game {

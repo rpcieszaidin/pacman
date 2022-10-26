@@ -4,6 +4,7 @@ pacman.PLAYER = 96;
 pacman.ENEMY = 69;
 pacman.WALL = 1;
 pacman.ROAD = 0;
+pacman.STEP = 2;
 pacman.actualMap = 0;
 pacman.map = null;
 
@@ -15,7 +16,7 @@ pacman.Board = class {
                 [pacman.ROAD, pacman.ROAD, pacman.WALL, pacman.ROAD, pacman.ROAD, pacman.WALL], 
                 [pacman.ROAD, pacman.ROAD, pacman.ROAD, pacman.ROAD, pacman.ROAD, pacman.ROAD], 
                 [pacman.WALL, pacman.WALL, pacman.ROAD, pacman.WALL, pacman.ROAD, pacman.ROAD], 
-                [pacman.ROAD, pacman.ROAD, pacman.ROAD, pacman.WALL, pacman.ROAD, pacman.ROAD]
+                [pacman.WALL, pacman.ROAD, pacman.ROAD, pacman.WALL, pacman.ROAD, pacman.ROAD]
             ]
         ];
         pacman.map = this.maps[pacman.actualMap];
@@ -25,6 +26,8 @@ pacman.Board = class {
     drawBoard() {
         let mapHTML = document.getElementById("board");
         mapHTML.textContent = "";
+
+        pacman.map = this.maps[pacman.actualMap];
 
         for (let i = 0; i < pacman.map.length; i++) {
             for(let j = 0; j < pacman.map[i].length; j++) {
@@ -53,6 +56,18 @@ pacman.Board = class {
         }
         pacman.map[entity.y][entity.x] = entity;
         this.entities.push(entity);
+    }
+
+    removeEntity(entity) {
+        for (let i = 0; i < pacman.map.length; i++) {
+            for(let j = 0; j < pacman.map[i].length; j++) {
+                if (typeof pacman.map[i][j] == 'object'){
+                    if (pacman.map[i][j].type === entity.type) {
+                        pacman.map[i][j] = pacman.ROAD;
+                    }
+                }
+            }
+        }
     }
 
     moveEntity(entity, x, y) {
