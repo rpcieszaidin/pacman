@@ -49,6 +49,7 @@ pacman.Board = class {
             entity = new pacman.Pacman(0, 0, 0, pacman.PLAYER, this);
             pacman.actualMap = entity.z;
         } else {
+            // GHOST
             entity = new pacman.Ghost(pacman.actualMap, 5, 0, pacman.ENEMY, this, this.entities[0]);
         }
         pacman.map[entity.y][entity.x] = entity;
