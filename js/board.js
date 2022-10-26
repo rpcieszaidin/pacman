@@ -42,7 +42,7 @@ pacman.Board = class {
     getPacman() {
         let player;
         this.entities.forEach(entity => {
-            if(entity.type === pacman.PLAYER)
+            if (entity.type === pacman.PLAYER)
                 player = entity;
         });
         return player;
@@ -67,15 +67,15 @@ pacman.Board = class {
             row.forEach(column => {
                 let div = document.createElement('div');
                 if (typeof column == 'object') {
-                    if (column.type === pacman.PLAYER) 
+                    if (column.type === pacman.PLAYER)
                         div.innerHTML = 'X';
                     else if (column.type === pacman.ENEMY)
                         div.innerHTML = 'A';
-                } else 
+                } else
                     div.innerHTML = column;
-                
+
                 r.appendChild(div);
-            }); 
+            });
             fragment.appendChild(r);
         });
         this.board.appendChild(fragment);
@@ -85,11 +85,11 @@ pacman.Board = class {
         let map = this.maps[entity.z];
         let [limitX, limitY] = this.getBoardLimits(map);
         if (x >= 0 && x < limitX && y >= 0 && y < limitY) {
-            if (entity.type === pacman.PLAYER && map[x][y] === pacman.ROAD) 
+            if (entity.type === pacman.PLAYER && map[x][y] === pacman.ROAD)
                 this.updatePositions(map, entity, x, y);
             else if (entity.type === pacman.ENEMY && map[x][y] !== pacman.WALL) {
-                    this.updatePositions(map, entity, x, y);
-                    this.checkLose(map);
+                this.updatePositions(map, entity, x, y);
+                this.checkLose(map);
             }
         }
     }
@@ -107,11 +107,17 @@ pacman.Board = class {
     }
 
     checkLose(map) {
-        let player = this.getPacman();
-        if (map[player.x][player.y] != player) {
-            player.removeListenerMove();
-            this.timer.stop();
-            this.lose.style.display = 'flex';
-        }
+        const promise = new Promise((resolve, reject) => {
+            let player = this.getPacman();
+            if (map[player.x][player.y] != player) {
+                resolve(() => {
+                    player.removeListenerMove();
+                    this.timer.stop();
+                    this.lose.style.display = 'flex';
+                });
+            }
+        });
+
+        promise.then((f) => f());
     }
 }
