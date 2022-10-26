@@ -8,6 +8,8 @@ pacman.Map = class{
             [0, 0, 0, 1, 0, 0]
         ]
 
+        this.clone = Array.from(this.array);
+
         this.div = document.getElementById('game');
     }
 
@@ -45,12 +47,15 @@ pacman.Map = class{
             entity.puntuacion ++;
         }
         
-        map[entity.x][entity.y] = 0;
+        if(this.clone[entity.x][entity.y] === 'C'){
+            map[entity.x][entity.y] = pacman.LADDER;
+        }else{
+            map[entity.x][entity.y] = 0;
+        }
+
         this.updateBoard(0, entity.x, entity.y);
 
         map[x][y] = entity;
-
-        this.updateBoard(entity.type, x, y, false)
         
         entity.x = x;
         entity.y = y;
@@ -82,10 +87,6 @@ pacman.Map = class{
                         cell.textContent = "A"
                     }else if(map[i][j].type === pacman.ENEMY){
                         cell.textContent = "B"
-                    }else if(Array.isArray(map[i][j])){
-                        if(map[i][j][0] === pacman.ESCALERA){
-                            cell.textContent = "C";
-                        }
                     }
                 } else {
                     cell.textContent = map[i][j];

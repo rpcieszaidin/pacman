@@ -2,12 +2,13 @@ var pacman = pacman || {};
 
 pacman.PLAYER = 'A';
 pacman.ENEMY = 'B';
+pacman.LADDER = 'C';
 pacman.COCO = 0;
 pacman.MURO = 1;
 
 pacman.Board = class {
     constructor() {
-        this.maps = [  ];
+        this.maps = [];
         this.maps.push(new pacman.Map());
 
         this.entities = [];
@@ -34,18 +35,26 @@ pacman.Board = class {
         {signal: this.controller.signal}
         );
     }
-    
 
+    //Función que inicializa el programa
+    init(){
+        this.addEntity(pacman.PLAYER);
+        this.addEntity(pacman.ENEMY);
+        this.drawBoard();
+    }
+    
+    //Llama a la clase Map y le pasa un tipo para que lo cree y añada al mapa
     addEntity(type){
         this.entities.push(this.maps[0].addEntity(type));
     }
 
+    //Mueve una entidad del mapa usando la clase Map
     moveEntity(entity, x, y){
         //Cogemos el mapa en el que esta la entidad que se va a mover
         this.maps[entity.z].moveEntity(entity, x, y)
     }
 
-
+    //Ejecuta la función dibujar teclado de la clase Map
     drawBoard(){
         this.maps[this.entities[0].z].drawBoard();
     }
@@ -113,6 +122,9 @@ pacman.Board = class {
             case "ArrowRight":
                 this.maps[jugador.z].moveEntity(jugador, x, ++y);
             break;
+
+            case "SpaceBar":
+                this.maps[jugador.z].moveEntity()
         }
 
     }
