@@ -3,12 +3,13 @@ pacman.PLAYER = 9;
 pacman.ENEMY = 3;
 pacman.PATH = 0;
 pacman.WALL = 1;
+pacman.DOOR = 7;
 UP=8;
 DOWN=2;
-LEFT=4;
-RIGHT=6;
+LEFT=3;
+RIGHT=4;
 const gameSpace = document.getElementById("gameSpace");
-
+var playableChar;
 pacman.Board = class {
     constructor() {
         this.maps = [
@@ -17,22 +18,25 @@ pacman.Board = class {
             ]
         ];
         this.entities = [];
+        this.gameState=true;
     }
     gameStart(){
-      document.getElementById("up").onclick=()=>this.movePlayers(UP, this.entities[0]);
-      document.getElementById("down").onclick=()=>this.movePlayers(DOWN, this.entities[0]);
-      document.getElementById("left").onclick=()=>this.movePlayers(LEFT, this.entities[0]);
-      document.getElementById("right").onclick=()=>this.movePlayers(RIGHT, this.entities[0]);
+      document.getElementById("reset").onclick=()=>this.reset();
       this.entities.forEach(element => {
         if(element.type==pacman.ENEMY)
-      this.enemyStart(element);})
+      element.enemyStart();
+        else if(element.type==pacman.PLAYER){
+            
+            document.getElementById("up").onclick=()=>element.movePlayers(UP, element);
+            document.getElementById("down").onclick=()=>element.movePlayers(DOWN, element);
+            document.getElementById("left").onclick=()=>element.movePlayers(LEFT, element);
+            document.getElementById("right").onclick=()=>element.movePlayers(RIGHT, element);
+            playableChar = element;
+        }})
     }
     randomStarter(ent){
         let pos,pos2;
         do {
-          //Posicionamiento manual temporal para comprobaciones de movimiento
-          // pos=0;
-          // pos2=0;
           pos=Math.floor(Math.random()*this.maps[0].length);
           pos2=Math.floor(Math.random()*this.maps[0][0].length);
         }
@@ -45,9 +49,9 @@ pacman.Board = class {
     addEntity(type) {
         let entity = null;
         if (type===pacman.PLAYER)
-          entity=new pacman.Entity(pacman.PLAYER);
+            entity=new pacman.Entity(pacman.PLAYER, this);
         else if(type===pacman.ENEMY)
-            entity = new pacman.Entity(pacman.ENEMY);
+            entity = new pacman.Entity(pacman.ENEMY, this);
         this.randomStarter(entity);
         //TO DO tener en cuenta al hacer multidimensional
         this.maps[0][entity.x][entity.y]=entity;
@@ -58,9 +62,9 @@ pacman.Board = class {
         for (let i = 0; i < this.maps[0].length; i++) {
             for(let j = 0; j < this.maps[0][i].length; j++) {
                 if(this.maps[0][i][j]==0)
-                    this.maps[0][i][j]=new pacman.Entity(pacman.PATH);
+                    this.maps[0][i][j]=new pacman.Entity(pacman.PATH, this);
                 else
-                    this.maps[0][i][j]=new pacman.Entity(pacman.WALL);
+                    this.maps[0][i][j]=new pacman.Entity(pacman.WALL, this);
             }
         }
     }
@@ -78,8 +82,8 @@ pacman.Board = class {
     }
     moveEntity(entity, x, y) {
         if (x >= 0 && x < this.maps[0].length && y >= 0 && y < this.maps[0][0].length) {
-          if(this.maps[entity.z][x][y].type==pacman.PATH){
-            this.maps[entity.z][entity.x][entity.y]= new pacman.Entity(pacman.PATH);
+          if(this.maps[entity.z][x][y].type==pacman.PATH || this.maps[entity.z][x][y].type==pacman.PLAYER){
+            this.maps[entity.z][entity.x][entity.y]= new pacman.Entity(pacman.PATH, this);
             entity.x=x;
             entity.y=y;
             this.maps[entity.z][x][y]=entity;
@@ -87,49 +91,23 @@ pacman.Board = class {
           this.drawBoard();
         }
     }
-    //TODO esto deberia ir en la entidad, no tiene sentido que esté aqui
-    //pero no consigo llamar a los metodos de board desde la clase entidad
-      movePlayers(num, entity){
-          switch (num) {
-              case DOWN:
-                  this.moveEntity(entity, entity.x+1, entity.y);
-                  break;
-              case UP:
-                  this.moveEntity(entity, entity.x-1, entity.y);
-                  break;
-              case LEFT:
-                  this.moveEntity(entity, entity.x, entity.y-1);
-                  break;
-              case RIGHT:
-                  this.moveEntity(entity, entity.x, entity.y+1);
-                  break;
-              default:
-                  break;
-          }
-      }
-     enemyStart(entity){
-         entity.intervalSetter= setInterval(()=>this.enemyMovement(), 1000);
-     }
-     //TO DO como actualmente no hay un final de juego no hago clear interval
-     //HAY QUE HACER CLEAR INTERVAL
-     enemyEnd(){
-         clearInterval(this.intervalSetter);
-     }
-    enemyMovement(){
-      //TO DO Esta solucion es tan elegante como un martillazo en las costillas
-      //TO DO quitar el caramelito de tener al jugador como entidad 0
-      let player = this.entities[0];
-      this.entities.forEach(element => {
-        if(element.type==pacman.ENEMY){
-          if(player.x>element.x && this.maps[0][element.x+1][element.y].type==pacman.PATH)
-              this.moveEntity(element, element.x+1, element.y);
-          else if(player.y>element.y && this.maps[0][element.x][element.y+1].type==pacman.PATH)
-              this.moveEntity(element, element.x, element.y+1)
-          else if(player.x<element.x && this.maps[0][element.x-1][element.y].type==pacman.PATH)
-               this.moveEntity(element, element.x-1, element.y)
-          else if(player.y<element.y && this.maps[0][element.x][element.y-1].type==pacman.PATH)
-              this.moveEntity(element, element.x, element.y-1)
-        }
-      });
+    gameEnd(){
+        document.getElementById("up").onclick=null;
+        document.getElementById("down").onclick=null;
+        document.getElementById("right").onclick=null;
+        document.getElementById("left").onclick=null;
+        this.entities.forEach(element => {
+                element.enemyEnd();
+        })
+    }
+    //TO DO NO FUNCIONA
+    reset(){
+        this.gameEnd();
+        this.entities.forEach(element => {
+            this.randomStarter(element);
+        });
+        
+        this.gameStart();
+        this.drawBoard();
     }
 }
