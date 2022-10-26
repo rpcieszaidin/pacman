@@ -1,6 +1,7 @@
 body{
-    background-color: gray;
+    background-color: rgb(39, 39, 39);
 }
+
 .space{
     border: solid white 1px;
     background-color: black;
@@ -9,14 +10,14 @@ body{
     height: 60px;
 }
 .player{
-    border: solid yellow 1px;
+    border: solid white 1px;
     background-color: yellow;
     display: inline-block;
     width: 60px;
     height: 60px;
 }
 .npc{
-    border: solid red 1px;
+    border: solid white 1px;
     background-color: red;
     display: inline-block;
     width: 60px;
@@ -29,5 +30,17 @@ body{
     width: 60px;
     height: 60px;
 }
-
+h1{
+    color: red;
+    font-size: 200px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin: 0 auto;
+    text-align: center;
+}
+.but{
+    background-color: green;
+    height: 40px;
+    width: 100px;
+    color: white;
+}
 
