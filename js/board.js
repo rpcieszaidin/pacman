@@ -7,31 +7,39 @@ pacman.Board = class {
     constructor() {
         this.maps = [
             [
-                [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
+                [0, 0, 1, 0, 0, 0], 
+                [0, 0, 1, 0, 0, 1], 
+                [0, 0, 0, 0, 0, 0], 
+                [1, 1, 0, 1, 0, 0], 
+                [0, 0, 0, 1, 0, 0]
             ]
         ];
         this.entities = [];
     }
 
-    addEntity(type) {
-        if (type === pacman.PLAYER) {
-            // implementar metodo posicion correcta
-            let player = new pacman.Pacman(0, 0, 0, pacman.PLAYER);
-            this.maps[0][0][0] = player;
-            this.entities.push(player);
-        } 
+    addEntity() {
+        let player = new pacman.Entity(0, 0, 0, pacman.PLAYER);
+        let enemy = new pacman.Entity(0, 0, 0, pacman.ENEMY);
+        this.maps[0][0][0] = player;
+        this.maps[0][3][5] = enemy;
+        this.entities.push(player);
+        this.entities.push(enemy);
     }
 
     drawBoard() {
-        let map = this.maps[0];
+        
+        let map = document.getElementById("board").innerHTML = this.maps[0];
         for (let i = 0; i < map.length; i++) {
             for(let j = 0; j < map[i].length; j++) {
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
-                        console.log('P');
+                        map.innerHTML='C';
                     } 
+                    if (map[i][j].type === pacman.ENEMY){
+                        map.innerHTML='A';
+                    }
                 } else {
-                    console.log(map[i][j]);
+                    //map.innerHTML=map[i][j];
                 }
             }
         }
