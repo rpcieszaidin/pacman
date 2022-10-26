@@ -1,0 +1,1 @@
+No entiendo porque al mover el fantasma me da el siguiente error: Uncaught TypeError: Cannot set properties of undefined (setting '4')
