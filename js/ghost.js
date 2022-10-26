@@ -59,11 +59,13 @@ pacman.Ghost = class {
     }
 
     checkLose() {
-        
-        if (this.x == this.player.x && this.y == this.player.y) {
-            document.getElementById("lose").style.visibility = "visible";
-            document.getElementById("refresh").style.visibility = "visible";
-            window.removeEventListener("keyup", this.player.eventPlayer);
-        }
+        new Promise((live) => {
+            if (this.x == this.player.x && this.y == this.player.y) {
+                document.getElementById("lose").style.visibility = "visible";
+                document.getElementById("refresh").style.visibility = "visible";
+                window.removeEventListener("keyup", this.player.eventPlayer);
+            }
+            live('alive');
+        })
     }
 }
