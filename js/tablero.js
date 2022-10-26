@@ -28,6 +28,7 @@ pacman.Tablero = class {
         this.aniadirEntidad(pacman.JUGADOR);
         this.aniadirEntidad(pacman.FANTASMA);
         this.aniadirEntidad(pacman.SALIDA);
+        this.aniadirEntidad(pacman.ENTRADA);
         this.mostrarMapa();
     }
     inicializarVariablesDePosicion(){
@@ -42,22 +43,18 @@ pacman.Tablero = class {
     aniadirEntidad(tipo) {
         if (tipo === pacman.JUGADOR) {
             let jugador = new pacman.Entidad(this.jugadorIniX,this.jugadorIniY, this.nivelActual, pacman.JUGADOR);
-            this.casillas[this.nivelActual][this.jugadorIniX][this.jugadorIniY] = jugador;
             this.entidades.push(jugador);
         }
         else if (tipo === pacman.FANTASMA) {
             let fantasma = new pacman.Entidad(this.fantasmaIniX,this.fantasmaIniY, this.nivelActual, pacman.FANTASMA);
-            this.casillas[this.nivelActual][this.fantasmaIniX][this.fantasmaIniY] = fantasma;
             this.entidades.push(fantasma);
         }
         else if (tipo === pacman.SALIDA) {
             let salida = new pacman.Entidad(this.salidaX,this.salidaY, this.nivelActual, pacman.SALIDA);
-            this.casillas[this.nivelActual][this.salidaX][this.salidaY] = salida;
             this.entidades.push(salida);
         } 
         else if (tipo === pacman.ENTRADA) {
             let entrada = new pacman.Entidad(this.jugadorIniX,this.jugadorIniY, this.nivelActual, pacman.ENTRADA);
-            this.casillas[this.nivelActual][this.jugadorIniX][this.jugadorIniY] = entrada;
             this.entidades.push(entrada);
         } 
     }
@@ -126,27 +123,23 @@ pacman.Tablero = class {
         for(let i=0; i<mapa.length; i++){
             for(let j=0; j<mapa[i].length; j++){
                 let elem = document.createElement("div");
-                if (typeof mapa[i][j] == 'object'){
-                    if(mapa[i][j].tipo === pacman.FANTASMA){
-                        elem.setAttribute("class", "casilla fantasma");
-                    }
-                    else if(mapa[i][j].tipo === pacman.JUGADOR){
-                        elem.setAttribute("class", "casilla jugador");
-                    }
-                    else if(mapa[i][j].tipo === pacman.SALIDA){
-                        elem.setAttribute("class", "casilla salida");
-                    }
-                    else if(mapa[i][j].tipo === pacman.ENTRADA){
-                        elem.setAttribute("class", "casilla entrada");
-                    }
+                if(this.comprobarEntidadEnCasilla(pacman.FANTASMA, i, j, this.nivelActual)){
+                    elem.setAttribute("class", "casilla fantasma");
                 }
-                else{
-                    if(mapa[i][j]==pacman.VALORMURO){
-                        elem.setAttribute("class", "casilla muro");
-                    }
-                    else if(mapa[i][j]==pacman.VALORLIBRE){
-                        elem.setAttribute("class", "casilla libre");
-                    }
+                else if(this.comprobarEntidadEnCasilla(pacman.JUGADOR, i, j, this.nivelActual)){
+                    elem.setAttribute("class", "casilla jugador");
+                }
+                else if(this.comprobarEntidadEnCasilla(pacman.SALIDA, i, j, this.nivelActual)){
+                    elem.setAttribute("class", "casilla salida");
+                }
+                else if(this.nivelActual>0 && this.comprobarEntidadEnCasilla(pacman.ENTRADA, i, j, this.nivelActual)){
+                    elem.setAttribute("class", "casilla entrada");
+                }
+                else if(mapa[i][j]==pacman.VALORMURO){
+                    elem.setAttribute("class", "casilla muro");
+                }
+                else if(mapa[i][j]==pacman.VALORLIBRE){
+                    elem.setAttribute("class", "casilla libre");
                 }
                 this.tableroMostrado.appendChild(elem);
             }
@@ -155,33 +148,30 @@ pacman.Tablero = class {
             this.tableroMostrado.appendChild(elem);
         }
     }
-    jugadorAtrapado(){
-        let entidadJugador = null;
-        let entidadFantasma = null;
-        for (let i=0; i<this.entidades.length; i++) {
-            if (this.entidades[i].tipo === pacman.JUGADOR) {
-                entidadJugador = this.entidades[i];
-            }
-            else if (this.entidades[i].tipo === pacman.FANTASMA) {
-                entidadFantasma = this.entidades[i];
+    comprobarEntidadEnCasilla(tipo, x, y, z){
+        let encontrado = false;
+        for (let i=0; i<this.entidades.length && !encontrado; i++) {
+            if(x==this.entidades[i].x && y==this.entidades[i].y && z==this.entidades[i].z && tipo===this.entidades[i].tipo){
+                encontrado = true;
             }
         }
-        return entidadJugador.x==entidadFantasma.x && entidadJugador.y==entidadFantasma.y && entidadJugador.z==entidadFantasma.z;
+        return encontrado;
     }
-    salidaEncontrada(){
-        /*
-        let resultado = false;
-        let entidadJugador = null;
-        let entidadFantasma = null;
-        for (let i=0; i<this.entidades.length; i++) {
-            if (this.entidades[i].tipo === pacman.JUGADOR) {
-                entidadJugador = this.entidades[i];
-            }
-            else if (this.entidades[i].tipo === pacman.FANTASMA) {
-                entidadFantasma = this.entidades[i];
+    jugadorAtrapado(entidad){
+        let atrapado = false;
+        for (let i=0; i<this.entidades.length && !atrapado; i++) {
+            if(entidad.x==this.entidades[i].x && entidad.y==this.entidades[i].y && entidad.z==this.entidades[i].z){
+                if((entidad.tipo===pacman.JUGADOR && this.entidades[i].tipo===pacman.FANTASMA) ||
+                   (entidad.tipo===pacman.FANTASMA && this.entidades[i].tipo===pacman.JUGADOR)){
+                    atrapado = true;
+                }
             }
         }
-        if(entidadJugador.x==this.salidaX && entidadJugador.y==this.salidaY){
+        return atrapado;
+    }
+    salidaEncontrada(entidad){
+        let resultado = false;
+        if(this.comprobarEntidadEnCasilla(pacman.SALIDA, entidad.x, entidad.y, entidad.z)){
             if(this.nivelActual==pacman.NIVELES-1){
                 resultado = true;
             }
@@ -193,15 +183,31 @@ pacman.Tablero = class {
                 aux = this.jugadorIniY;
                 this.jugadorIniY = this.salidaY;
                 this.salidaY = aux;
-                entidadJugador.x = this.jugadorIniX;
-                entidadJugador.y = this.jugadorIniY;
-                entidadJugador.z = this.nivelActual;
-                entidadFantasma.x = this.fantasmaIniX;
-                entidadFantasma.y = this.jugadorIniY;
-                entidadFantasma.z = this.nivelActual;
+                for (let i=0; i<this.entidades.length; i++) {
+                    if(this.entidades[i].tipo===pacman.JUGADOR){
+                        this.entidades[i].x = this.jugadorIniX
+                        this.entidades[i].y = this.jugadorIniY;
+                        this.entidades[i].z = this.nivelActual;
+                    }
+                    else if(this.entidades[i].tipo===pacman.FANTASMA){
+                        this.entidades[i].x = this.fantasmaIniX
+                        this.entidades[i].y = this.fantasmaIniY;
+                        this.entidades[i].z = this.nivelActual;
+                    }
+                    else if(this.entidades[i].tipo===pacman.SALIDA){
+                        this.entidades[i].x = this.salidaX
+                        this.entidades[i].y = this.salidaY;
+                        this.entidades[i].z = this.nivelActual;
+                    }
+                    else if(this.entidades[i].tipo===pacman.ENTRADA){
+                        this.entidades[i].x = this.jugadorIniX
+                        this.entidades[i].y = this.jugadorIniY;
+                        this.entidades[i].z = this.nivelActual;
+                    }
+                }
             }
         }
-        else if(this.nivelActual>0 && entidadJugador.x==this.jugadorIniX && entidadJugador.y==this.jugadorIniY){
+        else if(this.nivelActual>0 && this.comprobarEntidadEnCasilla(pacman.ENTRADA, entidad.x, entidad.y, entidad.z)){
             this.nivelActual--;
             let aux = this.jugadorIniX;
             this.jugadorIniX = this.salidaX;
@@ -209,25 +215,36 @@ pacman.Tablero = class {
             aux = this.jugadorIniY;
             this.jugadorIniY = this.salidaY;
             this.salidaY = aux;
-            entidadFantasma.x = this.fantasmaIniX;
-            entidadFantasma.y = this.jugadorIniY;
+            for (let i=0; i<this.entidades.length; i++) {
+                if(this.entidades[i].tipo===pacman.JUGADOR){
+                    this.entidades[i].x = this.salidaX
+                    this.entidades[i].y = this.salidaY;
+                    this.entidades[i].z = this.nivelActual;
+                }
+                else if(this.entidades[i].tipo===pacman.FANTASMA){
+                    this.entidades[i].x = this.fantasmaIniX
+                    this.entidades[i].y = this.fantasmaIniY;
+                    this.entidades[i].z = this.nivelActual;
+                }
+                else if(this.entidades[i].tipo===pacman.SALIDA){
+                    this.entidades[i].x = this.salidaX
+                    this.entidades[i].y = this.salidaY;
+                    this.entidades[i].z = this.nivelActual;
+                }
+                else if(this.entidades[i].tipo===pacman.ENTRADA){
+                    this.entidades[i].x = this.jugadorIniX
+                    this.entidades[i].y = this.jugadorIniY;
+                    this.entidades[i].z = this.nivelActual;
+                }
+            }
         }
         return resultado;
-        */
     }
     moverEntidad(entidad, x, y){
         let resultado = false;
         let mapa = this.casillas[entidad.z];
-        if(x>=0 && y>=0 && y<mapa.length && x<mapa[y].length){
-            if(mapa[x][y] == pacman.VALORLIBRE || typeof mapa[x][y] == 'object'){
-                mapa[x][y] = entidad;
-                let valorAnterior = pacman.VALORLIBRE
-                for (let i=0; i<this.entidades.length; i++) {
-                    if (!(entidad===this.entidades[i]) && this.entidades[i].x == entidad.x && this.entidades[i].y == entidad.y) {
-                        valorAnterior = this.entidades[i];
-                    }
-                }
-                mapa[entidad.x][entidad.y] = valorAnterior;
+        if(x>=0 && y>=0 && x<mapa.length && y<mapa[x].length){
+            if(mapa[x][y] == pacman.VALORLIBRE){
                 entidad.x = x;
                 entidad.y = y;
                 resultado = true;
