@@ -46,7 +46,7 @@ pacman.Tablero = class {
             this.entidades.push(jugador);
         }
         else if (tipo === pacman.FANTASMA) {
-            let fantasma = new pacman.Entidad(this.fantasmaIniX,this.jugadorIniY, this.nivelActual, pacman.FANTASMA);
+            let fantasma = new pacman.Entidad(this.fantasmaIniX,this.fantasmaIniY, this.nivelActual, pacman.FANTASMA);
             this.casillas[this.nivelActual][this.fantasmaIniX][this.fantasmaIniY] = fantasma;
             this.entidades.push(fantasma);
         }
@@ -92,7 +92,7 @@ pacman.Tablero = class {
         let resultado = this.hayCamino(this.jugadorIniX, this.jugadorIniY, this.salidaX, this.salidaY);
         if(resultado){
             this.copiarTablero();
-            resultado = this.hayCamino(this.fantasmaIniX, this.jugadorIniY, this.jugadorIniX, this.jugadorIniY);
+            resultado = this.hayCamino(this.fantasmaIniX, this.fantasmaIniY, this.jugadorIniX, this.jugadorIniY);
         }
         return resultado;
     }
@@ -127,48 +127,24 @@ pacman.Tablero = class {
             for(let j=0; j<mapa[i].length; j++){
                 let elem = document.createElement("div");
                 if (typeof mapa[i][j] == 'object'){
-                    if(Array.isArray(mapa[i][j])){
-                        let encontrado = false;
-                        let array = mapa[i][j];
-                        for (let k=0; k<array.length && !encontrado; k++) {
-                            if(array[k].tipo === pacman.FANTASMA){
-                                elem.setAttribute("class", "casilla fantasma");
-                                encontrado = true;
-                            }
-                            else if(array[k].tipo === pacman.JUGADOR){
-                                elem.setAttribute("class", "casilla jugador");
-                                encontrado = true;
-                            }
-                            else if(array[k].tipo === pacman.SALIDA){
-                                elem.setAttribute("class", "casilla salida");
-                                encontrado = true;
-                            }
-                            else if(array[k].tipo === pacman.ENTRADA){
-                                elem.setAttribute("class", "casilla entrada");
-                                encontrado = true;
-                            }
-                        }
+                    if(mapa[i][j].tipo === pacman.FANTASMA){
+                        elem.setAttribute("class", "casilla fantasma");
                     }
-                    else{
-                        if(mapa[i][j].tipo === pacman.FANTASMA){
-                            elem.setAttribute("class", "casilla fantasma");
-                        }
-                        else if(mapa[i][j].tipo === pacman.JUGADOR){
-                            elem.setAttribute("class", "casilla jugador");
-                        }
-                        else if(mapa[i][j].tipo === pacman.SALIDA){
-                            elem.setAttribute("class", "casilla salida");
-                        }
-                        else if(mapa[i][j].tipo === pacman.ENTRADA){
-                            elem.setAttribute("class", "casilla entrada");
-                        }
+                    else if(mapa[i][j].tipo === pacman.JUGADOR){
+                        elem.setAttribute("class", "casilla jugador");
+                    }
+                    else if(mapa[i][j].tipo === pacman.SALIDA){
+                        elem.setAttribute("class", "casilla salida");
+                    }
+                    else if(mapa[i][j].tipo === pacman.ENTRADA){
+                        elem.setAttribute("class", "casilla entrada");
                     }
                 }
                 else{
-                    if(this.casillas[this.nivelActual][i][j]==pacman.VALORMURO){
+                    if(mapa[i][j]==pacman.VALORMURO){
                         elem.setAttribute("class", "casilla muro");
                     }
-                    else if(this.casillas[this.nivelActual][i][j]==pacman.VALORLIBRE){
+                    else if(mapa[i][j]==pacman.VALORLIBRE){
                         elem.setAttribute("class", "casilla libre");
                     }
                 }
@@ -180,13 +156,32 @@ pacman.Tablero = class {
         }
     }
     jugadorAtrapado(){
-        //return this.jugador.x==this.fantasma.x && this.jugador.y==this.fantasma.y;
-        return false;
+        let entidadJugador = null;
+        let entidadFantasma = null;
+        for (let i=0; i<this.entidades.length; i++) {
+            if (this.entidades[i].tipo === pacman.JUGADOR) {
+                entidadJugador = this.entidades[i];
+            }
+            else if (this.entidades[i].tipo === pacman.FANTASMA) {
+                entidadFantasma = this.entidades[i];
+            }
+        }
+        return entidadJugador.x==entidadFantasma.x && entidadJugador.y==entidadFantasma.y && entidadJugador.z==entidadFantasma.z;
     }
     salidaEncontrada(){
         /*
         let resultado = false;
-        if(this.jugador.x==this.salidaX && this.jugador.y==this.salidaY){
+        let entidadJugador = null;
+        let entidadFantasma = null;
+        for (let i=0; i<this.entidades.length; i++) {
+            if (this.entidades[i].tipo === pacman.JUGADOR) {
+                entidadJugador = this.entidades[i];
+            }
+            else if (this.entidades[i].tipo === pacman.FANTASMA) {
+                entidadFantasma = this.entidades[i];
+            }
+        }
+        if(entidadJugador.x==this.salidaX && entidadJugador.y==this.salidaY){
             if(this.nivelActual==pacman.NIVELES-1){
                 resultado = true;
             }
@@ -198,13 +193,15 @@ pacman.Tablero = class {
                 aux = this.jugadorIniY;
                 this.jugadorIniY = this.salidaY;
                 this.salidaY = aux;
-                this.jugador.x = this.jugadorIniX;
-                this.jugador.y = this.jugadorIniY;
-                this.fantasma.x = this.fantasmaIniX;
-                this.fantasma.y = this.jugadorIniY;
+                entidadJugador.x = this.jugadorIniX;
+                entidadJugador.y = this.jugadorIniY;
+                entidadJugador.z = this.nivelActual;
+                entidadFantasma.x = this.fantasmaIniX;
+                entidadFantasma.y = this.jugadorIniY;
+                entidadFantasma.z = this.nivelActual;
             }
         }
-        else if(this.nivelActual>0 && this.jugador.x==this.jugadorIniX && this.jugador.y==this.jugadorIniY){
+        else if(this.nivelActual>0 && entidadJugador.x==this.jugadorIniX && entidadJugador.y==this.jugadorIniY){
             this.nivelActual--;
             let aux = this.jugadorIniX;
             this.jugadorIniX = this.salidaX;
@@ -212,42 +209,25 @@ pacman.Tablero = class {
             aux = this.jugadorIniY;
             this.jugadorIniY = this.salidaY;
             this.salidaY = aux;
-            this.fantasma.x = this.fantasmaIniX;
-            this.fantasma.y = this.jugadorIniY;
+            entidadFantasma.x = this.fantasmaIniX;
+            entidadFantasma.y = this.jugadorIniY;
         }
         return resultado;
         */
-       return false;
     }
     moverEntidad(entidad, x, y){
         let resultado = false;
         let mapa = this.casillas[entidad.z];
-        if(x>=0 && y>=0 && x<mapa[y].length && y<mapa.length){
-            if(mapa[x][y] === pacman.VALORLIBRE){
+        if(x>=0 && y>=0 && y<mapa.length && x<mapa[y].length){
+            if(mapa[x][y] == pacman.VALORLIBRE || typeof mapa[x][y] == 'object'){
                 mapa[x][y] = entidad;
-                if(Array.isArray(mapa[entidad.x][entidad.y])){
-                    mapa[entidad.x][entidad.y].pop;
+                let valorAnterior = pacman.VALORLIBRE
+                for (let i=0; i<this.entidades.length; i++) {
+                    if (!(entidad===this.entidades[i]) && this.entidades[i].x == entidad.x && this.entidades[i].y == entidad.y) {
+                        valorAnterior = this.entidades[i];
+                    }
                 }
-                else{
-                    mapa[entidad.x][entidad.y] = pacman.VALORLIBRE;
-                }
-                entidad.x = x;
-                entidad.y = y;
-                resultado = true;
-            }
-            else if (typeof mapa[x][y] == 'object'){
-                if(Array.isArray(mapa[x][y])){
-                    mapa[x][y].push(entidad);
-                }
-                else{
-                    mapa[x][y] = [mapa[x][y], entidad];
-                }
-                if(Array.isArray(mapa[entidad.x][entidad.y])){
-                    mapa[entidad.x][entidad.y].pop;
-                }
-                else{
-                    mapa[entidad.x][entidad.y] = pacman.VALORLIBRE;
-                }
+                mapa[entidad.x][entidad.y] = valorAnterior;
                 entidad.x = x;
                 entidad.y = y;
                 resultado = true;
