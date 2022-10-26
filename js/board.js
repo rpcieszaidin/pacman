@@ -1,82 +1,90 @@
 var pacman = pacman || {};
 
-pacman.PLAYER = 98;
-pacman.ENEMY = 35;
-pacman.STAIRS = 63;
+pacman.PLAYER = "P";
+pacman.ENEMY = "G";
+pacman.STAIRS = "X";
+pacman.COOKIE = "o";
+pacman.EMPTY = "";
+pacman.WALL = "H";
+
 
 pacman.Board = class {
     constructor() {
         this.maps = [
             [
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 1, 1, 0, 1, 1, 0],
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 1, 1, 1, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 1, 1, 0, 1, 1, 0],
-                [0, 0, 0, 0, 0, 0, 0]
+                ["o", "o", "o", "o", "o", "o", "o"],
+                ["o", "H", "H", "o", "H", "H", "o"],
+                ["o", "o", "o", "o", "o", "o", "o"],
+                ["o", "o", "H", "H", "H", "o", "o"],
+                ["o", "o", "o", "o", "o", "o", "o"],
+                ["o", "H", "H", "o", "H", "H", "o"],
+                ["o", "o", "o", "o", "o", "o", "o"]
             ]
         ];
         this.entities = [];
-        this.end = false;
+        this.gameover = false;
         this.okmove= null;
     }
 
+    start(path){
+        let start = document.getElementById(path);
+        start.addEventListener("click", ()=>{
+            this.drawBoard(0);
+        })
+    }
+
     addEntity(type) {
-        if (type === pacman.PLAYER) {
+        switch (type){
+            case pacman.PLAYER:
+
+                break;
+            case pacman.STAIRS:
+
+                break;
+            case pacman.ENEMY:
+
+                break;
+            case pacman.ENEMY:
+                console.log("Error while creating the entity")
+                break;
+
+        }
+        /*if (type === pacman.PLAYER) {
             let player = new pacman.Entity(0, 4, 3, pacman.PLAYER);
-            this.maps[0][4][3] = player;
+            this.maps[0][4][3] = pacman.PLAYER;
             this.entities.push(player);
         }
         if (type === pacman.ENEMY) {
-            let enemy = new pacman.Entity(0,this.rannumer(),this.rannumer(), pacman.ENEMY)
-        }
+            let enemy = new pacman.Entity(0,this.rannumber(),this.rannumber(), pacman.ENEMY)
+        }*/
     }
 
-    rannumer(){
+    rannumber(){
         return (Math.floor(Math.random() * 2)*7);
     }
 
     drawBoard(level) {
-        /*for (let i = 0; i < this.maps[0].length; i++) {
-            for(let j = 0; j < this.maps[0][i].length; j++) {
-                if (typeof this.maps[0][i][j] == 'object'){
-                    if (this.maps[0][i][j].type === pacman.PLAYER) {
-                    } 
-                } else {
-                    for(let i=0;i<26;i++){
-                        di.classList.add("key");
-                        di.setAttribute('id',this.converted);
-                        di.innerHTML=this.converted;
-                        this.X.appendChild("");
-                    }
+        let game = document.getElementById("game")
+        for(let i = 0; i < this.maps[level].length; i++){
+            let row = document.createElement('tr');
+            for (let j = 0; j < this.maps[level][i].length; j++){
+                let cell = document.createElement("td");
+                if(this.maps[level][i][j] === "H"){
+                    cell.classList.add("wall");
+                }else {
+                    cell.classList.add("cell");
                 }
+                cell.innerHTML=this.maps[level][i][j];
+                row.appendChild(cell)
             }
-        }*/
-        let game = document.getElementById("game");
-        let trial = document.createElement("tr");
-        trial.classList("row");
-        trial.innerHTML("X");
-        game.appendChild(trial);
-        /*for (let height of this.maps[level].length){
-            //let numb = 0;
-            let row = document.createElement("tr");
-            row.classList("row");
-            for (let width of this.maps[level][height].length){
-                let column = document.createElement("td");
-                column.classList.add("column");
-                column.innerHTML=this.maps[level][height][width];
-                row.appendChild(column)
-            }
-            row.innerHTML="x";
             game.appendChild(row);
-        }*/
+        }
     }
 
     moveEntity(entity, x, y) {
         this.okmove = true;
         if (this.maps[entity.z][y][x].type === pacman.ENEMY){
-            this.end = true;
+            this.gameover = true;
             this.okmove = false;
         }
         //
@@ -91,7 +99,7 @@ pacman.Board = class {
         }
         //Between this and the comment line above will probably be merged into 1 if, this is for testing.
         if (this.maps[entity.z][y][x].type === pacman.ENEMY){
-            this.end = true;
+            this.gameover = true;
         }
         if (this.maps[entity.z][y][x].type === pacman.STAIRS){
             //Next level

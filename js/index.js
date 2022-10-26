@@ -1,3 +1,4 @@
 let board = new pacman.Board();
-board.drawBoard(0);
+board.start("start");
+board.addEntity(pacman.STAIRS);
 board.addEntity(pacman.PLAYER);

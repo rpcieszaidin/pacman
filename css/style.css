@@ -6,13 +6,21 @@ body{
     text-align: center;
 }
 #game{
+    margin:0 auto;
     height: 500px;
-    width: 100%;
+    width: 500px;
 }
-.row .column{
-    height:50px;
-    width:50px;
-    margin-left:2px;
-    margin-top:2px;
-    background-color: yellow;
+
+.cell{
+    background-color: #154c79;
+    color:yellow;
+    height: 50px;
+    width: 50px;
+}
+
+.wall{
+    background-color: black;
+    color:white;
+    height: 50px;
+    width: 50px;
 }
