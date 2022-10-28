@@ -55,7 +55,7 @@ pacman.Pacman = class {
             let entidad = this.nuevoTablero.entidades[i];
             if (entidad.tipo === pacman.FANTASMA) {
                 this.nuevoTablero.moverFantasma(entidad);
-                this.comprobarFinalFantasma(entidad);
+                this.comprobarFinal(entidad);
                 this.nuevoTablero.mostrarMapa();
             }
         }
@@ -68,13 +68,6 @@ pacman.Pacman = class {
         }
         else if(this.nuevoTablero.salidaEncontrada(entidad)){
             this.mensajeMostrado.textContent = "¡Has ganado!";
-            this.finalPartida = true;
-            this.killThread();
-        }
-    }
-    comprobarFinalFantasma(entidad){
-        if(this.nuevoTablero.jugadorAtrapado(entidad)){
-            this.mensajeMostrado.textContent = "¡Los fantasmas te han atrapado!";
             this.finalPartida = true;
             this.killThread();
         }

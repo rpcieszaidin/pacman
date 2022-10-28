@@ -9,7 +9,6 @@ pacman.VALORMURO = 1;
 pacman.VALORLIBRE = 0;
 pacman.VALOREXPLORADO = -1;
 
-
 pacman.Tablero = class {
     constructor(elemTablero){
         this.tableroMostrado = elemTablero;
@@ -59,10 +58,6 @@ pacman.Tablero = class {
         } 
     }
     generarMapa(){
-        this.copiaTablero = new Array(pacman.FILAS);
-        for(let i=0; i<pacman.FILAS; i++) {
-            this.copiaTablero[i] = new Array(pacman.COLUMNAS);
-        }
         do{
             do{
                 for(let i=0; i<pacman.FILAS; i++){
@@ -94,11 +89,7 @@ pacman.Tablero = class {
         return resultado;
     }
     copiarTablero(){
-        for(let i=0; i<pacman.FILAS; i++){
-            for(let j=0; j<pacman.COLUMNAS; j++){
-                this.copiaTablero[i][j] = this.casillas[this.nivelActual][i][j];
-            }
-        }
+        this.copiaTablero = JSON.parse(JSON.stringify(this.casillas[this.nivelActual]));
     }
     hayCamino(origenX, origenY, destinoX, destinoY){
         let resultado = false;
@@ -117,29 +108,59 @@ pacman.Tablero = class {
         }
         return resultado;
     }
+    crearTableroAMostrar(){
+        this.copiarTablero();
+        for (let i=0; i<this.entidades.length; i++) {
+            let entidad = this.entidades[i];
+            if(entidad.z==this.nivelActual){
+                let casilla = this.copiaTablero[entidad.x][entidad.y];
+                if(typeof casilla != 'object'){
+                    this.copiaTablero[entidad.x][entidad.y] = entidad;
+                }
+                else{
+                    if(casilla.tipo===pacman.SALIDA || casilla.tipo===pacman.ENTRADA){
+                        this.copiaTablero[entidad.x][entidad.y] = entidad;
+                    }
+                    else if(casilla.tipo===pacman.JUGADOR && entidad.tipo===pacman.FANTASMA){
+                        this.copiaTablero[entidad.x][entidad.y] = entidad;
+                    }
+                }
+            }
+        }
+    }
     mostrarMapa(){
         this.tableroMostrado.innerHTML = "";
-        let mapa = this.casillas[this.nivelActual];
-        for(let i=0; i<mapa.length; i++){
-            for(let j=0; j<mapa[i].length; j++){
+        this.crearTableroAMostrar();
+        for(let i=0; i<this.copiaTablero.length; i++){
+            for(let j=0; j<this.copiaTablero[i].length; j++){
                 let elem = document.createElement("div");
-                if(this.comprobarEntidadEnCasilla(pacman.FANTASMA, i, j, this.nivelActual)){
-                    elem.setAttribute("class", "casilla fantasma");
+                let casilla = this.copiaTablero[i][j];
+                if(typeof casilla == 'object'){
+                    if(casilla.tipo === pacman.FANTASMA){
+                        elem.setAttribute("class", "casilla fantasma");
+                    }
+                    else if(casilla.tipo === pacman.JUGADOR){
+                        elem.setAttribute("class", "casilla jugador");
+                    }
+                    else if(casilla.tipo === pacman.SALIDA){
+                        elem.setAttribute("class", "casilla salida");
+                    }
+                    else if(casilla.tipo === pacman.ENTRADA){
+                        if(this.nivelActual>0){
+                            elem.setAttribute("class", "casilla entrada");
+                        }
+                        else{
+                            elem.setAttribute("class", "casilla libre");
+                        }
+                    }
                 }
-                else if(this.comprobarEntidadEnCasilla(pacman.JUGADOR, i, j, this.nivelActual)){
-                    elem.setAttribute("class", "casilla jugador");
-                }
-                else if(this.comprobarEntidadEnCasilla(pacman.SALIDA, i, j, this.nivelActual)){
-                    elem.setAttribute("class", "casilla salida");
-                }
-                else if(this.nivelActual>0 && this.comprobarEntidadEnCasilla(pacman.ENTRADA, i, j, this.nivelActual)){
-                    elem.setAttribute("class", "casilla entrada");
-                }
-                else if(mapa[i][j]==pacman.VALORMURO){
-                    elem.setAttribute("class", "casilla muro");
-                }
-                else if(mapa[i][j]==pacman.VALORLIBRE){
-                    elem.setAttribute("class", "casilla libre");
+                else{
+                    if(casilla == pacman.VALORMURO){
+                        elem.setAttribute("class", "casilla muro");
+                    }
+                    else if(casilla == pacman.VALORLIBRE){
+                        elem.setAttribute("class", "casilla libre");
+                    }
                 }
                 this.tableroMostrado.appendChild(elem);
             }
@@ -171,12 +192,45 @@ pacman.Tablero = class {
     }
     salidaEncontrada(entidad){
         let resultado = false;
-        if(this.comprobarEntidadEnCasilla(pacman.SALIDA, entidad.x, entidad.y, entidad.z)){
-            if(this.nivelActual==pacman.NIVELES-1){
-                resultado = true;
+        if(entidad.tipo===pacman.JUGADOR){
+            if(this.comprobarEntidadEnCasilla(pacman.SALIDA, entidad.x, entidad.y, entidad.z)){
+                if(entidad.z==pacman.NIVELES-1){
+                    resultado = true;
+                }
+                else{
+                    this.nivelActual = entidad.z+1;
+                    let aux = this.jugadorIniX;
+                    this.jugadorIniX = this.salidaX;
+                    this.salidaX = aux;
+                    aux = this.jugadorIniY;
+                    this.jugadorIniY = this.salidaY;
+                    this.salidaY = aux;
+                    for (let i=0; i<this.entidades.length; i++) {
+                        if(this.entidades[i].tipo===pacman.JUGADOR){
+                            this.entidades[i].x = this.jugadorIniX
+                            this.entidades[i].y = this.jugadorIniY;
+                            this.entidades[i].z = this.nivelActual;
+                        }
+                        else if(this.entidades[i].tipo===pacman.FANTASMA){
+                            this.entidades[i].x = this.fantasmaIniX
+                            this.entidades[i].y = this.fantasmaIniY;
+                            this.entidades[i].z = this.nivelActual;
+                        }
+                        else if(this.entidades[i].tipo===pacman.SALIDA){
+                            this.entidades[i].x = this.salidaX
+                            this.entidades[i].y = this.salidaY;
+                            this.entidades[i].z = this.nivelActual;
+                        }
+                        else if(this.entidades[i].tipo===pacman.ENTRADA){
+                            this.entidades[i].x = this.jugadorIniX
+                            this.entidades[i].y = this.jugadorIniY;
+                            this.entidades[i].z = this.nivelActual;
+                        }
+                    }
+                }
             }
-            else{
-                this.nivelActual++;
+            else if(entidad.z>0 && this.comprobarEntidadEnCasilla(pacman.ENTRADA, entidad.x, entidad.y, entidad.z)){
+                this.nivelActual = entidad.z-1;
                 let aux = this.jugadorIniX;
                 this.jugadorIniX = this.salidaX;
                 this.salidaX = aux;
@@ -185,8 +239,8 @@ pacman.Tablero = class {
                 this.salidaY = aux;
                 for (let i=0; i<this.entidades.length; i++) {
                     if(this.entidades[i].tipo===pacman.JUGADOR){
-                        this.entidades[i].x = this.jugadorIniX
-                        this.entidades[i].y = this.jugadorIniY;
+                        this.entidades[i].x = this.salidaX
+                        this.entidades[i].y = this.salidaY;
                         this.entidades[i].z = this.nivelActual;
                     }
                     else if(this.entidades[i].tipo===pacman.FANTASMA){
@@ -204,37 +258,6 @@ pacman.Tablero = class {
                         this.entidades[i].y = this.jugadorIniY;
                         this.entidades[i].z = this.nivelActual;
                     }
-                }
-            }
-        }
-        else if(this.nivelActual>0 && this.comprobarEntidadEnCasilla(pacman.ENTRADA, entidad.x, entidad.y, entidad.z)){
-            this.nivelActual--;
-            let aux = this.jugadorIniX;
-            this.jugadorIniX = this.salidaX;
-            this.salidaX = aux;
-            aux = this.jugadorIniY;
-            this.jugadorIniY = this.salidaY;
-            this.salidaY = aux;
-            for (let i=0; i<this.entidades.length; i++) {
-                if(this.entidades[i].tipo===pacman.JUGADOR){
-                    this.entidades[i].x = this.salidaX
-                    this.entidades[i].y = this.salidaY;
-                    this.entidades[i].z = this.nivelActual;
-                }
-                else if(this.entidades[i].tipo===pacman.FANTASMA){
-                    this.entidades[i].x = this.fantasmaIniX
-                    this.entidades[i].y = this.fantasmaIniY;
-                    this.entidades[i].z = this.nivelActual;
-                }
-                else if(this.entidades[i].tipo===pacman.SALIDA){
-                    this.entidades[i].x = this.salidaX
-                    this.entidades[i].y = this.salidaY;
-                    this.entidades[i].z = this.nivelActual;
-                }
-                else if(this.entidades[i].tipo===pacman.ENTRADA){
-                    this.entidades[i].x = this.jugadorIniX
-                    this.entidades[i].y = this.jugadorIniY;
-                    this.entidades[i].z = this.nivelActual;
                 }
             }
         }
