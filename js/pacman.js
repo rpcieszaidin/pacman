@@ -40,7 +40,7 @@ pacman.Pacman = class {
                                 this.nuevoTablero.moverEntidad(entidad, entidad.x, entidad.y+1);
                             break;
                         }
-                        this.comprobarFinal();
+                        this.comprobarFinal(entidad);
                         this.nuevoTablero.mostrarMapa();
                     }
                 }
@@ -55,18 +55,18 @@ pacman.Pacman = class {
             let entidad = this.nuevoTablero.entidades[i];
             if (entidad.tipo === pacman.FANTASMA) {
                 this.nuevoTablero.moverFantasma(entidad);
-                this.comprobarFinal();
+                this.comprobarFinal(entidad);
                 this.nuevoTablero.mostrarMapa();
             }
         }
     }
-    comprobarFinal(){
-        if(this.nuevoTablero.jugadorAtrapado()){
+    comprobarFinal(entidad){
+        if(this.nuevoTablero.jugadorAtrapado(entidad)){
             this.mensajeMostrado.textContent = "¡Los fantasmas te han atrapado!";
             this.finalPartida = true;
             this.killThread();
         }
-        else if(this.nuevoTablero.salidaEncontrada()){
+        else if(this.nuevoTablero.salidaEncontrada(entidad)){
             this.mensajeMostrado.textContent = "¡Has ganado!";
             this.finalPartida = true;
             this.killThread();
