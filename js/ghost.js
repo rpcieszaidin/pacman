@@ -1,13 +1,8 @@
-pacman.Ghost = class {
+pacman.Ghost = class extends pacman.Entity{
     constructor(x, y, z, type, board, player) {
-        this.board = board;
+        super(x, y, z, type, board)
         this.player = player;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.type = type;
         this.movement = null
-        this.startMoving()
     }
 
     startMoving(){
@@ -42,9 +37,9 @@ pacman.Ghost = class {
     checkPossibleMovements(){
         let possibleMovements = [];
         let map = board.maps[this.z];
-        if(this.x < map[this.y].length && map[this.y][this.x + 1] != 1) possibleMovements.push("right");
+        if(this.x < map[this.y].length - 1 && map[this.y][this.x + 1] != 1) possibleMovements.push("right");
         if(this.x > 0 && map[this.y][this.x - 1] != 1) possibleMovements.push("left");
-        if(this.y < map.length && map[this.y + 1][this.x] != 1) possibleMovements.push("down");
+        if(this.y < map.length - 1 && map[this.y + 1][this.x] != 1) possibleMovements.push("down");
         if(this.y > 0 && map[this.y - 1][this.x] != 1) possibleMovements.push("up");
 
         return possibleMovements

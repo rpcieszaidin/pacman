@@ -1,10 +1,6 @@
-pacman.Pacman = class {
+pacman.Pacman = class extends pacman.Entity{
     constructor(x, y, z, type, board) {
-        this.board = board
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.type = type;
+        super(x, y, z, type, board)
         this.setUpControls();
     }
 

@@ -1,12 +1,39 @@
-html, body{
+@font-face {
+    font-family: pacman;
+    src: url(pacman.ttf);
+}
 
+body{
+    margin: 0;
+    min-height: 100vh;
+    font-family: pacman;
+
+    background-color: #1c1c1c;
+    color: white;
+}
+
+.score{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 4em;
+
+    color: yellow;
+    position: absolute;
+    top: 20%;
+    width: 100%;
+    text-align: center;
 }
 
 .board{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+
+    margin: 0;
     user-select: none;
-    font-size: 2em;
-    line-height: 40px;
-    letter-spacing: 10px;
+    font-size: 4em;
+    line-height: 60px;
+    letter-spacing: 60px;
 }
 
 .lose{
@@ -15,7 +42,8 @@ html, body{
     justify-content: center;
     visibility: hidden;
 
-    font-size: 2em;
+    font-size: 7em;
+    font-weight: bold;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: white;
 
