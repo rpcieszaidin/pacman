@@ -1,5 +1,6 @@
 pacman.Pacman = class {
-    constructor(x, y, z, type) {
+    constructor(x, y, z, type, board) {
+        this.board = board
         this.x = x;
         this.y = y;
         this.z = z;
@@ -18,16 +19,16 @@ pacman.Pacman = class {
     keyListener = (event) =>{
         switch(event.code){
             case "ArrowUp":
-                board.moveEntity(this, this.x, this.y - 1)
+                this.board.moveEntity(this, this.x, this.y - 1)
                 break;
             case "ArrowRight":
-                board.moveEntity(this, this.x + 1 , this.y)
+                this.board.moveEntity(this, this.x + 1 , this.y)
                 break;
             case "ArrowDown":
-                board.moveEntity(this, this.x, this.y + 1)
+                this.board.moveEntity(this, this.x, this.y + 1)
                 break;
             case "ArrowLeft":
-                board.moveEntity(this, this.x - 1, this.y)
+                this.board.moveEntity(this, this.x - 1, this.y)
                 break;
         }
     }

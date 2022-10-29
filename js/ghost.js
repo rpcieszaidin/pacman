@@ -1,5 +1,7 @@
 pacman.Ghost = class {
-    constructor(x, y, z, type) {
+    constructor(x, y, z, type, board, player) {
+        this.board = board;
+        this.player = player;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -19,26 +21,25 @@ pacman.Ghost = class {
     move(){
         // Implementar IA de los ghosts
         let movement = this.checkPossibleMovements();
-        movement = movement[Math.round(Math.random() * (movement.length - 1))];
+        movement = this.checkBestDirection(movement);
 
         switch (movement) {
             case "left":
-                board.moveEntity(this, this.x - 1,  this.y);
+                this.board.moveEntity(this, this.x - 1,  this.y);
                 break;
             case "right":
-                board.moveEntity(this, this.x + 1,  this.y);
+                this.board.moveEntity(this, this.x + 1,  this.y);
                 break;
             case "up":
-                board.moveEntity(this, this.x,  this.y - 1);
+                this.board.moveEntity(this, this.x,  this.y - 1);
                 break;
             case "down":
-                board.moveEntity(this, this.x,  this.y + 1);
+                this.board.moveEntity(this, this.x,  this.y + 1);
                 break;
         }
     }
 
     checkPossibleMovements(){
-        // Arreglar error de limetes
         let possibleMovements = [];
         let map = board.maps[this.z];
         if(this.x < map[this.y].length && map[this.y][this.x + 1] != 1) possibleMovements.push("right");
@@ -47,5 +48,15 @@ pacman.Ghost = class {
         if(this.y > 0 && map[this.y - 1][this.x] != 1) possibleMovements.push("up");
 
         return possibleMovements
+    }
+
+    checkBestDirection(movements){
+        let selected
+        if(this.player.x < this.x && movements.includes("left")) selected = "left"
+        else if(this.player.x > this.x && movements.includes("right")) selected = "right"
+        else if(this.player.y < this.y && movements.includes("up")) selected = "up"
+        else if(this.player.y > this.y && movements.includes("down")) selected = "down"
+        else selected = movements[Math.floor(Math.random() * movements.length)];
+        return selected
     }
 }

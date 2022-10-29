@@ -17,10 +17,10 @@ pacman.Board = class {
         let entity;
         switch (type) {
             case pacman.PLAYER:
-                entity = new pacman.Pacman(x, y, z, pacman.PLAYER);
+                entity = new pacman.Pacman(x, y, z, pacman.PLAYER, this);
                 break;
             case pacman.ENEMY:
-                entity = new pacman.Ghost(x, y, z, pacman.ENEMY);
+                entity = new pacman.Ghost(x, y, z, pacman.ENEMY, this, this.entities[0]);
                 break;
         }
         this.maps[z][y][x] = entity;
@@ -45,23 +45,13 @@ pacman.Board = class {
             });
             board.innerHTML += "<br>";
         });
-
-
-        
     }
 
     moveEntity(entity, x, y) {
         let map = this.maps[entity.z];
         
         if (y >= 0 && y < map.length && x >= 0 && x < map[y].length) {
-            if(map[y][x].type == pacman.PLAYER || map[y][x].type == pacman.ENEMY){
-                if(entity.type === pacman.PLAYER){
-                    map[entity.y][entity.x] = 0;
-                }else if(entity.type === pacman.ENEMY){
-                    map[y][x] = 0;
-                }
-                this.lose()
-            }
+            this.checkLose(entity, x, y, map).then(() => this.lose())
             if(map[y][x] == 0){
                 map[entity.y][entity.x] = 0;
                 entity.x = x;
@@ -70,6 +60,19 @@ pacman.Board = class {
             }
         }
         this.drawBoard();
+    }
+
+    checkLose(entity, x, y, map){
+        return new Promise((resolve, reject) => {
+            if(map[y][x].type == pacman.PLAYER || map[y][x].type == pacman.ENEMY){
+                if(entity.type === pacman.PLAYER){
+                    map[entity.y][entity.x] = 0;
+                }else if(entity.type === pacman.ENEMY){
+                    map[y][x] = 0;
+                }
+                resolve(1);
+            }
+        });
     }
 
     lose(){
