@@ -12,6 +12,7 @@ pacman.Board = class {
         ];
         this.entities = [];
         this.board = document.getElementById("board");
+        this.interval = null;
     }
 
     addEntity(type) {
@@ -46,74 +47,138 @@ pacman.Board = class {
     }
 
     moveEntity(entity, x, y) {
-        this.entities.forEach(ent => {
-            if(entity.type == ent.type && entity.type == pacman.PLAYER){
-                console.log('1');
-                let map = this.maps[ent.z];
+                let map = this.maps[entity.z];
                 //Compruebo que el movimiento este en los limites
-                //if ((x >= 0 && x < this.maps[ent.z][x].length || y >= 0 && y < this.maps[ent.z][x][y].length)){
+                if ((x >= 0 && x < map[x].length || y >= 0 && y < map[x][y].length)){
                     //if (!map[x][y]) return false;
                     //Estas dos coprobaciones son para que no quiera moverse en dos direcciones a la vez
                     //if(!((entity.x == x && entity.y + 1 == y) || (entity.x == x && entity.y -1 == y))) return false;
                     //if(!(entity.x == x && entity.y + 1 == y || entity.x == x && entity.y -1 == y)) return false;
                     //Si pasa las comprobaciones el movimiento es corecto y se mueve
-                    
-                        console.log('2');
                     if(map[x][y] == 0){
-                        console.log('3');
-                        let a = ent.x;
-                        let b = ent.y;
+                        let a = entity.x;
+                        let b = entity.y;
                         map[a][b] = 0;
-                        ent.z = map;
-                        ent.y = y
-                        ent.x = x;
-                        ap[x][y] = ent;
+                        entity.z = entity.z;
+                        entity.y = y
+                        entity.x = x;
+                        map[x][y] = entity;
                         this.board.innerHTML = '';
                         this.drawBoard();
+                    }else if( typeof map[x][y] == 'object'){
+                        let a = entity.x;
+                        let b = entity.y;
+                        map[a][b] = 0;
+                        entity.z = entity.z;
+                        entity.y = y
+                        entity.x = x;
+                        map[x][y] = entity;
+                        this.board.innerHTML = '';
+                        this.drawBoard();
+                        clearInterval(this.interval);
+                        this.interval = null;
+                        document.removeEventListener('keyup',this.movingPlayer);
+                        console.log('You lose');
                     }
-                //}   
-            }else if(entity.type == ent.type && entity.type == pacman.ENEMY){
-                let map = this.maps[ent.z];
-                let movements = [];
-                if(map[entity.x-1][entity.y] === 0){
-                    movements.push(1);
-                }
-                if(map[entity.x+1][entity.y] === 0){
-                    movements.push(2);
-                }
-                if(map[entity.x][entity.y-1] === 0){
-                    movements.push(3);
-                }
-                if(map[entity.x][entity.y+1] === 0){
-                    movements.push(4);
-                }
-                let num = Math.floor(Math.random()*movements.length);
-                console.log(movements);
-                console.log(num);
+
+                }   
             }
-        });   
-    }
+    
             
 
-    move(entity){
-        document.addEventListener("keyup", (e)=>{
-            switch(e.key){
-                case 'ArrowUp':
-                    console.log('move');
-                    this.moveEntity(entity, entity.x -1, entity.y);
-                    break;
-                case 'ArrowDown':
-                    this.moveEntity(entity, entity.x +1, entity.y);
-                    break;
-                case 'ArrowLeft':
-                    this.moveEntity(entity, entity.x, entity.y-1);
-                    break;
-                case'ArrowRight':
-                    this.moveEntity(entity, entity.x, entity.y+1);
-                    break;
-                default:
-                    console.log('Muévase con las flechas');
+    movePlayer(entity){
+        this.entities.forEach(ent => {
+            if(entity.type == ent.type && entity.type == pacman.PLAYER){
+                document.addEventListener('keyup', this.movingPlayer);
             }
-        },false);
+        });
+    }
+
+    movingPlayer = (e) =>{
+        this.entities.forEach(ent => {
+            if(ent.type == pacman.PLAYER){
+                switch(e.key){
+                    case 'ArrowUp':
+                        console.log('move');
+                        this.moveEntity(ent, ent.x -1, ent.y);
+                        break;
+                    case 'ArrowDown':
+                        this.moveEntity(ent, ent.x +1, ent.y);
+                        break;
+                    case 'ArrowLeft':
+                        this.moveEntity(ent, ent.x, ent.y-1);
+                        break;
+                    case'ArrowRight':
+                        this.moveEntity(ent, ent.x, ent.y+1);
+                        break;
+                    default:
+                        console.log('Muévase con las flechas');
+                }
+            }
+        });
+    }
+
+    movingEnemy(entity){
+        this.entities.forEach(ent => {
+            if(entity.type == ent.type && entity.type == pacman.ENEMY){
+                let map = this.maps[ent.z];
+                let movements = [];
+                let pos = ent.x -1;
+                let a = map.length;
+                if(ent.x < map.length && ent.x > 0){
+                    console.log(map[pos][ent.y]);
+                    if(map[pos][ent.y] == 0 || typeof map[pos][ent.y] == 'object'){
+                        movements.push(1);
+                    }
+                }
+                a = map.length -1
+                if(ent.x < a && ent.x >= 0 ){
+                    pos = ent.x +1;
+                    console.log(map[pos][ent.y]);
+                    if(map[pos][ent.y] == 0 ||  typeof map[pos][ent.y] == 'object'){
+                        movements.push(2);
+                    }
+                }
+                a = map[ent.x].length
+                if(ent.y <= a && ent.y > 0){
+                    pos = ent.y-1;
+                    console.log(map[ent.x][pos]);
+                        if(map[ent.x][pos] == 0 ||  typeof map[ent.x][pos] == 'object'){
+                        movements.push(3);
+                    }
+                }
+                a = map[ent.x].length -1
+                if(ent.y < a && ent.y >= 0){
+                    pos = ent.y +1;
+                    console.log(map[ent.x][pos]);
+                    if(map[ent.x][pos] == 0 ||  typeof map[ent.x][pos] == 'object'){
+                        movements.push(4);
+                    }
+                }
+                let size = movements.length;
+                let num = Math.round(Math.random()*(size-1));
+                let n = movements[num];
+                switch(n){
+                    case 1: 
+                        this.moveEntity(ent, ent.x -1, ent.y);
+                        break;
+                    case 2: 
+                        this.moveEntity(ent, ent.x +1, ent.y);
+                        break;
+                    case 3: 
+                        this.moveEntity(ent, ent.x, ent.y -1);
+                        break;
+                    case 4: 
+                        this.moveEntity(ent, ent.x, ent.y +1);
+                        break;
+                    default:
+                        console.log('Fuera de los límites');
+                }
+            }
+        });
+    }
+
+    moveEnemy(entity){
+        this.interval = setInterval(() => this.movingEnemy(entity),1000);
     }
 }
