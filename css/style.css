@@ -1,10 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@100&display=swap');
 html, body{
     padding: 0;
     margin: 0;
+    font-family: Fira Sans Condensed;
+    font-size: 1.8rem;
 }
 
 body{
-    width: 100vw;
+    width: 100%;
 }
 
 .pacman{
@@ -64,7 +67,7 @@ header{
 }
 
 article{
-    height: 60%;
+    height: 85%;
     width: 100%;
 
     display: flex;
@@ -97,4 +100,13 @@ article{
 table, td, tr{
     border: 1px solid black;
     border-collapse: collapse;
+}
+
+footer{
+    width: 100%;
+    height: 25%;
+    display: flex;
+    font-size: .5em;
+    justify-content: center;
+    align-items: center;
 }

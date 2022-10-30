@@ -76,7 +76,8 @@ pacman.Board = class {
 
     //Termina el juego apagando todos los botones y fantasmas
     gameOver(){
-        console.log("Game over")
+        let titulo = document.getElementById("titulo");
+        titulo.textContent = "Has perdido";
         clearInterval(this.interval);
         this.controller.abort();
     }
@@ -147,7 +148,7 @@ pacman.Board = class {
                         this.changeLevel(jugador, pacman.SUBIDA)
                     };
                     if(bajada){
-                        this.changeLevel(jugador, pacman.bajada);
+                        this.changeLevel(jugador, pacman.BAJADA);
                     }
                 }
                 
@@ -195,13 +196,20 @@ pacman.Board = class {
 
     //Insertamos una entidad en la copia del mapa
     insertEntities(map){
-        let entities = this.entities;
         let jugador = this.entities[0];
+        let entities = this.entities;
+
+        //Sacamos todas las entidades del piso del jugador
+        let arrayEntidades = [];
         entities.slice().reverse().forEach( (item) =>{
             if(item.z === jugador.z){
-                map[item.x][item.y] = item;
+                arrayEntidades.push(item);
             }
         });
+        //Las colocamos en su posicion
+        arrayEntidades.forEach( (item) => {
+            map[item.x][item.y] = item;
+        })
     }
 
     //Devuelve si el jugador se ha movido
@@ -242,7 +250,7 @@ pacman.Board = class {
             this.maps[entity.z][x][y] = -1;
             let puntos = document.getElementById("puntos");
             entity.puntuacion ++;
-            puntos.textContent = "Puntos: "+entity.puntuacion;
+            puntos.textContent = "Puntos: " + entity.puntuacion;
         }
         
         entity.x = x;
@@ -258,12 +266,13 @@ pacman.Board = class {
         let piso = document.getElementById("piso");
         if(type === pacman.SUBIDA){
             entity.z ++;
-            piso.textContent = "Piso: "+entity.z;
+            piso.textContent = "Piso: " + entity.z;
         }else if(type === pacman.BAJADA){
             entity.z --;
-            piso.textContent = "Piso: "+entity.z;
+            piso.textContent = "Piso: " + entity.z;
         }
-        this.insertEntities(this.maps[entity.z]);
-        this.drawBoard(this.maps[entity.z]);
+        let map = JSON.parse(JSON.stringify(this.maps[entity.z]));
+        this.insertEntities(map);
+        this.drawBoard(map);
     }
 }
