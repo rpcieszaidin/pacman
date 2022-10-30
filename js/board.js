@@ -3,6 +3,8 @@ var pacman = pacman || {};
 pacman.PLAYER = 'A';
 pacman.ENEMY = 'B';
 pacman.LADDER = 'C';
+pacman.SUBIDA = '⬆️';
+pacman.BAJADA = '⬇️';
 pacman.COCO = 0;
 pacman.MURO = 1;
 
@@ -10,6 +12,14 @@ pacman.Board = class {
     constructor() {
         //Array con mapas
         this.maps = [
+            [
+                [0, 0, 1, 0, 0, 0], 
+                [0, 0, 1, 0, 0, 1], 
+                [0, 0, 0, 0, 0, 0], 
+                [1, 1, 0, 1, 0, 0], 
+                [0, 0, 0, 1, 0, 0]
+            ],
+
             [
                 [0, 0, 1, 0, 0, 0], 
                 [0, 0, 1, 0, 0, 1], 
@@ -53,10 +63,11 @@ pacman.Board = class {
         }, 1000);
 
         //Crea las entidades
-        let player = new pacman.Entity(1, 1, 0, pacman.PLAYER);
-        this.entities.push(player);
+        this.entities.push(new pacman.Entity(1, 1, 0, pacman.PLAYER));
         this.entities.push(new pacman.Entity(3, 4, 0, pacman.ENEMY));
-
+        this.entities.push(new pacman.Entity(3, 4, 1, pacman.ENEMY));
+        this.entities.push(new pacman.Entity(2, 1, 0, pacman.SUBIDA));
+        this.entities.push(new pacman.Entity(2, 1, 1, pacman.BAJADA));
         let map = JSON.parse(JSON.stringify(this.maps[0]));
         this.insertEntities(map);
 
@@ -65,7 +76,7 @@ pacman.Board = class {
 
     //Termina el juego apagando todos los botones y fantasmas
     gameOver(){
-        console.log()
+        console.log("Game over")
         clearInterval(this.interval);
         this.controller.abort();
     }
@@ -103,10 +114,9 @@ pacman.Board = class {
 
     //Movimiento del jugador
     playerMovement(event){
-        let map = JSON.parse(JSON.stringify(this.maps[this.entities[0].z]));
         if (event.defaultPrevented) {
             return;
-            }
+        }
                 
         let jugador = this.entities[0];
         let x = jugador.x;
@@ -129,7 +139,17 @@ pacman.Board = class {
                 this.moveEntity(jugador, x, ++y);
             break;
 
-            case "SpaceBar":
+            case " ":
+                if(event.code === "Space"){
+                    const subida = this.entities.find(element => element.type === pacman.SUBIDA && element.z === jugador.z);
+                    const bajada = this.entities.find(element => element.type === pacman.BAJADA && element.z === jugador.z);
+                    if(subida){
+                        this.changeLevel(jugador, pacman.SUBIDA)
+                    };
+                    if(bajada){
+                        this.changeLevel(jugador, pacman.bajada);
+                    }
+                }
                 
             break;
         }
@@ -149,12 +169,21 @@ pacman.Board = class {
                 let cell = document.createElement('td');
                 if (typeof map[i][j] == 'object'){
                     if (map[i][j].type === pacman.PLAYER) {
-                        cell.textContent = "A"
+                        cell.setAttribute("class", "pacman");
                     }else if(map[i][j].type === pacman.ENEMY){
-                        cell.textContent = "B"
+                        cell.setAttribute("class", "ghost");
+                    }else if(map[i][j].type === pacman.SUBIDA){
+                        cell.setAttribute("class", "subida");
+                    }else if(map[i][j].type === pacman.BAJADA){
+                        cell.setAttribute("class", "bajada");
                     }
                 } else {
-                    cell.textContent = map[i][j];
+                    if(map[i][j] === 1){
+                        cell.setAttribute("class", "muro");
+                    }else if(map[i][j] === pacman.COCO){
+                        cell.setAttribute("class", "coco");
+                    }
+                    
                 }
                 row.appendChild(cell);
             }
@@ -167,9 +196,12 @@ pacman.Board = class {
     //Insertamos una entidad en la copia del mapa
     insertEntities(map){
         let entities = this.entities;
-        entities.forEach( (item) =>{
-            map[item.x][item.y] = item.type;
-        })
+        let jugador = this.entities[0];
+        entities.slice().reverse().forEach( (item) =>{
+            if(item.z === jugador.z){
+                map[item.x][item.y] = item;
+            }
+        });
     }
 
     //Devuelve si el jugador se ha movido
@@ -199,14 +231,18 @@ pacman.Board = class {
 
         //Comprobamos si acaba la partida
         let jugador = this.entities[0];
-        this.entities.forEach( (item) => {
-            if(item != jugador && item.type === pacman.ENEMY && jugador.x === item.x && jugador.y === item.y){
-                this.gameOver();
-            }
-        })
+        //Buscamos al fantasma que esté en el mismo piso que el jugador
+        let fantasma = this.entities.find(element => element.type === pacman.ENEMY && element.z === jugador.z);
+        //Comprobamos si está en la misma posición
+        if(jugador.x === fantasma.x && jugador.y == fantasma.y){
+            this.gameOver();
+        }
 
         if(map[x][y] === pacman.COCO && entity.type === pacman.PLAYER){
+            this.maps[entity.z][x][y] = -1;
+            let puntos = document.getElementById("puntos");
             entity.puntuacion ++;
+            puntos.textContent = "Puntos: "+entity.puntuacion;
         }
         
         entity.x = x;
@@ -215,5 +251,19 @@ pacman.Board = class {
         this.drawBoard(map);
 
         return true;
+    }
+
+    //Cambia de nivel al personaje
+    changeLevel(entity, type){
+        let piso = document.getElementById("piso");
+        if(type === pacman.SUBIDA){
+            entity.z ++;
+            piso.textContent = "Piso: "+entity.z;
+        }else if(type === pacman.BAJADA){
+            entity.z --;
+            piso.textContent = "Piso: "+entity.z;
+        }
+        this.insertEntities(this.maps[entity.z]);
+        this.drawBoard(this.maps[entity.z]);
     }
 }

@@ -1,0 +1,100 @@
+html, body{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    width: 100vw;
+}
+
+.pacman{
+    background-image: url("../src/pacman.png");
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.ghost{
+    background-image: url("../src/ghost.png");
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.coco{
+    background-image: url("../src/cherry.png");
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.muro{
+    background-color: green;
+}
+
+.subida, .bajada{
+    background-image: url("../src/flecha.svg");
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.subida{
+    transform: rotate(-90deg);
+}
+.bajada{
+    transform: rotate(90deg);
+}
+
+.container{
+    width: 100%;
+    height: 100vh;
+
+    flex-direction: column;
+
+    display: flex;
+}
+
+header{
+    width: 100%;
+    height: 15%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgb(101, 101, 101);
+}
+
+article{
+    height: 60%;
+    width: 100%;
+
+    display: flex;
+}
+.piso{
+    height: 100%;
+    width: 25%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#game{
+    height: 100%;
+    width: 50%;
+}
+.puntos{
+    height: 100%;
+    width: 25%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#map{
+    width: 100%;
+    height: 100%;
+}
+
+table, td, tr{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
