@@ -1,9 +1,7 @@
-let board = new pacman.Board();
-let button = document.getElementById("button");
-
+let start = document.getElementById("button");
+start.onclick = () => {this.init()};
 
 function init(){
-    board.init;
+    let board = new pacman.Board();
+    board.init();
 }
-
-
