@@ -56,16 +56,15 @@ pacman.Board = class {
             }
             this.board.innerHTML += '<br>';
         }
+        if(this.entities.length==6){
+            this.entities.length=3;
+        }
     }
 
     moveEntity(entity, x, y) {
                 let map = this.maps[entity.z];
                 //Compruebo que el movimiento este en los limites
                 if ((x >= 0 && x < map[x].length || y >= 0 && y < map[x][y].length)){
-                    //if (!map[x][y]) return false;
-                    //Estas dos coprobaciones son para que no quiera moverse en dos direcciones a la vez
-                    //if(!((entity.x == x && entity.y + 1 == y) || (entity.x == x && entity.y -1 == y))) return false;
-                    //if(!(entity.x == x && entity.y + 1 == y || entity.x == x && entity.y -1 == y)) return false;
                     //Si pasa las comprobaciones el movimiento es corecto y se mueve
                     if(map[x][y] == 0){
                         let a = entity.x;
@@ -79,17 +78,15 @@ pacman.Board = class {
                         this.drawBoard();
                     }else if( typeof map[x][y] == 'object'){
                         if(map[x][y].type == pacman.STAIR){
-                            entity.z++;
                             this.changeMap++;
-                            this.entities.slice(0, this.entities.length);
                             this.board.innerHTML = '';
-                            var board = new pacman.Board();
-                            board.addEntity(pacman.PLAYER);
-                            board.addEntity(pacman.ENEMY);
-                            board.addEntity(pacman.STAIR);
-                            board.drawBoard();
+                            this.placeEntities();
+                            this.addEntity(pacman.STAIR);
+                            this.addEntity(pacman.PLAYER);
+                            this.addEntity(pacman.ENEMY);
+                            this.drawBoard();
                         }
-                        if(map[x][y].type = pacman.PLAYER){
+                        else if(map[x][y].type = pacman.PLAYER){
                             let a = entity.x;
                             let b = entity.y;
                             map[a][b] = 0;
@@ -104,7 +101,7 @@ pacman.Board = class {
                             document.removeEventListener('keyup',this.movingPlayer);
                             console.log('You lose');
                         }
-                        if(map[x][y].type == pacman.ENEMY){
+                        else if(map[x][y].type == pacman.ENEMY){
                             let a = entity.x;
                             let b = entity.y;
                             map[a][b] = 0;
@@ -220,5 +217,19 @@ pacman.Board = class {
 
     moveEnemy(entity){
         this.interval = setInterval(() => this.movingEnemy(entity),1000);
+    }
+
+    placeEntities(){
+        this.entities.forEach(entity => {
+            if(entity.type == pacman.PLAYER){
+                entity.z++;
+                entity.x=0;
+                entity.y=0;
+            }else if(entity.type == pacman.ENEMY){
+                entity.z++;
+                entity.x=4;
+                entity.y=5;
+            }
+        });
     }
 }
