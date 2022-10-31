@@ -1,5 +1,7 @@
 Miguel García del Real Ortiz
 
+*No he encontrado un sitio donde poner las promesas de manera que tenga sentido*
+
 # He refactorizado el código de manera masiva en la última versión
     · He eliminado la clase mapa ya que no era necesaria
     · El movimiento ya no altera el mapa
