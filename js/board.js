@@ -56,15 +56,21 @@ pacman.Board = class {
         if (x >=0 && x < map.length && y >= 0 && y < map[x].length) {
             if(map[x][y]!=1){
                 let entityEnemy=this.entities.find((e)=>e.type!=entity.type);
-                if(x==entityEnemy.x && y==entityEnemy.y){
+                let promesa = new Promise((resolve, reject)=>{
+                    if(x==entityEnemy.x && y==entityEnemy.y){
+                        resolve();
+                    }else{
+                        reject();
+                    }
+                }).then(()=>{
                     if(entity.type==3){
                         clearInterval(entity.interval);
                     }else{
-                        clearInterval(entityEnemy.interval);
+                        clearInterval(entity.interval);
                     }
                     document.getElementById('text').innerHTML="GAME OVER!!!";
                     document.getElementById('buttons').style.pointerEvents='none';
-                }
+                }).catch(()=>console.log('sigues vivo'));
                 map[entity.x][entity.y]=0;
                 entity.x=x;
                 entity.y=y;
@@ -93,4 +99,3 @@ pacman.Board = class {
         }
     }
 }
-
