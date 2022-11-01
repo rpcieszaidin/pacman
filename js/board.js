@@ -2,6 +2,7 @@ var pacman = pacman || {};
 
 pacman.PLAYER = 99;
 pacman.ENEMY = 98;
+pacman.STAIR = 'T';
 pacman.WALL = 1;
 pacman.ROAD = 0;
 
@@ -9,12 +10,18 @@ pacman.Board = class {
     constructor() {
         this.maps = [
             [
-                [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
+                [0, 0, 1, 0, 0, 'T'], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
+            ],
+            [
+                [0, 0, 1, 0, 0, 'T'], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], ['T', 0, 0, 1, 0, 0]
+            ],
+            [
+                [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], ['T', 0, 0, 1, 0, 0]
             ]
         ];
         this.mapsCopy = JSON.parse(JSON.stringify(this.maps));
         this.entities = [];
-        this.currentMap = 0;
+        this.currentMap = 1;
         this.board = document.querySelector('.board');
         this.lose = document.getElementById('lose');
         this.restart = document.querySelector('.restart-btn');
@@ -49,6 +56,10 @@ pacman.Board = class {
         return player;
     }
 
+    resetCopy() {
+        this.mapsCopy = JSON.parse(JSON.stringify(this.maps));
+    }
+
     addEntity(x, y, z, type) {
         let entity;
         entity = new pacman.Entity(x, y, z, type, this);
@@ -60,7 +71,7 @@ pacman.Board = class {
     }
 
     drawBoard() {
-        let map = this.mapsCopy[0];
+        let map = this.mapsCopy[this.currentMap];
         let fragment = document.createDocumentFragment();
         map.forEach(row => {
             let r = document.createElement('div');
@@ -86,8 +97,11 @@ pacman.Board = class {
         let map = this.mapsCopy[entity.z];
         let [limitX, limitY] = this.getBoardLimits(map);
         if (x >= 0 && x < limitX && y >= 0 && y < limitY) {
-            if (entity.type === pacman.PLAYER && map[x][y] === pacman.ROAD)
+            if (entity.type === pacman.PLAYER && map[x][y] === pacman.ROAD || map[x][y] === pacman.STAIR){
+                if (map[x][y] === pacman.STAIR)
+                    this.changeMap(x, y, map);
                 this.updatePositions(map, entity, x, y);
+            }
             else if (entity.type === pacman.ENEMY && map[x][y] !== pacman.WALL) {
                 this.updatePositions(map, entity, x, y);
                 this.checkLose(map);
@@ -95,9 +109,33 @@ pacman.Board = class {
         }
     }
 
+    changeMap(x, y, map) {
+        let [limitX, limitY] = this.getBoardLimits(map);
+        if (x == limitX && y == 0)
+            this.currentMap--;
+        else
+            this.currentMap++;
+
+        this.resetCopy();
+        this.entities.forEach(entity => {
+            if (entity.type === pacman.PLAYER)
+                [entity.x, entity.y] = [0, 0];
+            else
+                [entity.x, entity.y] = [limitX, limitY];
+
+            entity.z = this.currentMap;
+            this.mapsCopy[entity.z][entity.x][entity.y] = entity;
+        });
+        this.drawBoard();
+    } 
+
     updatePositions(map, entity, x, y) {
-        map[entity.x][entity.y] = 0;
-        this.board.children[entity.x].children[entity.y].innerHTML = 0;
+        let toReplace = 0;
+        if (this.maps[entity.z][entity.x][entity.y] === 'T')
+            toReplace = 'T';
+        
+        map[entity.x][entity.y] = toReplace;
+        this.board.children[entity.x].children[entity.y].innerHTML = toReplace;
         [entity.x, entity.y] = [x, y];
         map[x][y] = entity;
 
