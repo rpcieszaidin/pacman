@@ -13,10 +13,11 @@ pacman.Ghost = class {
 
     possibleMovements() {
         let movements = [];
-        if (this.y > 0 && pacman.map[this.y-1][this.x] != 1) movements.push("up");
-        if (this.x > 0 && pacman.map[this.y][this.x-1] != 1) movements.push("left");
-        if (this.y < pacman.map.length - 1 && pacman.map[this.y+1][this.x] != 1) movements.push("down");
-        if (this.x < pacman.map.length - 1 && pacman.map[this.y][this.x+1] != 1) movements.push("right");
+        let map = this.board.maps[this.z];
+        if (this.y > 0 && map[this.y-1][this.x] != pacman.WALL) movements.push("up");
+        if (this.x > 0 && map[this.y][this.x-1] != pacman.WALL) movements.push("left");
+        if (this.y < map.length - 1 && map[this.y+1][this.x] != pacman.WALL) movements.push("down");
+        if (this.x < map[this.y].length - 1 && map[this.y][this.x+1] != pacman.WALL) movements.push("right");
         return movements;
     }
 
@@ -45,13 +46,27 @@ pacman.Ghost = class {
         if (this.player.y > this.y && movements.includes("down")) movement = "down";
         if (this.player.x > this.x && movements.includes("right")) movement = "right";
 
+        // IA TRASH
+        let coords = this.x + this.y;
         this.movement(movement);
+        let reCoords = this.x + this.y;
+        if (coords == reCoords) {
+            this.board.moveEntity(this, this.x+1, this.y);
+            reCoords = this.x + this.y;
+            if (coords == reCoords) {
+                this.board.moveEntity(this, this.x, this.y-1);
+                reCoords = this.x + this.y;
+                if (coords == reCoords) {
+                    this.board.moveEntity(this, this.x, this.y+1);
+                }
+            }
+        }
         
         this.checkLose();
     }
 
     startMove() {
-        this.interval = setInterval(this.move, 400);
+        this.interval = setInterval(this.move, 500);
     }
 
     stopMove() {
@@ -64,6 +79,7 @@ pacman.Ghost = class {
                 document.getElementById("lose").style.visibility = "visible";
                 document.getElementById("refresh").style.visibility = "visible";
                 window.removeEventListener("keyup", this.player.eventPlayer);
+                this.stopMove();
             }
             live('alive');
         })

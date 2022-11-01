@@ -9,7 +9,12 @@
     </head>
     <body>
         <div id="game">
-            <div id="board" style="font-family: monospace; margin-top: 8%; text-align: center; font-size: 70px;"></div>
+            <div id="board"></div>
+            <div id="score"><b>BALLS</b><br/>41</div>
+        </div>
+        <div id="win">
+            <p id="winMessage">YOU WIN</p>
+            <button id="winRefresh" onClick="window.location.reload()">Refresh</button>
         </div>
         <div id="lose">
             <p id="message">GAME OVER</p>
