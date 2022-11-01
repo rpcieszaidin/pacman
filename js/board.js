@@ -98,8 +98,10 @@ pacman.Board = class {
         let [limitX, limitY] = this.getBoardLimits(map);
         if (x >= 0 && x < limitX && y >= 0 && y < limitY) {
             if (entity.type === pacman.PLAYER && map[x][y] === pacman.ROAD || map[x][y] === pacman.STAIR){
-                if (map[x][y] === pacman.STAIR)
+                if (map[x][y] === pacman.STAIR) {
                     this.changeMap(x, y, map);
+                    return;
+                }
                 this.updatePositions(map, entity, x, y);
             }
             else if (entity.type === pacman.ENEMY && map[x][y] !== pacman.WALL) {
@@ -111,7 +113,7 @@ pacman.Board = class {
 
     changeMap(x, y, map) {
         let [limitX, limitY] = this.getBoardLimits(map);
-        if (x == limitX && y == 0)
+        if (x == limitX - 1 && y == 0)
             this.currentMap--;
         else
             this.currentMap++;
@@ -121,11 +123,13 @@ pacman.Board = class {
             if (entity.type === pacman.PLAYER)
                 [entity.x, entity.y] = [0, 0];
             else
-                [entity.x, entity.y] = [limitX, limitY];
+                [entity.x, entity.y] = [limitX - 1, limitY - 1];
 
             entity.z = this.currentMap;
+            console.log(entity);
             this.mapsCopy[entity.z][entity.x][entity.y] = entity;
         });
+        this.board.textContent = '';
         this.drawBoard();
     } 
 
