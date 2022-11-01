@@ -1,1 +1,0 @@
-Christian Josué Fuentes Muñoz
