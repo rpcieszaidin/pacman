@@ -12,6 +12,7 @@ pacman.Board = class {
                 [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
             ]
         ];
+        this.mapsCopy = JSON.parse(JSON.stringify(this.maps));
         this.entities = [];
         this.currentMap = 0;
         this.board = document.querySelector('.board');
@@ -32,7 +33,7 @@ pacman.Board = class {
     }
 
     getMaps() {
-        return this.maps;
+        return this.mapsCopy;
     }
 
     getBoardLimits(board) {
@@ -52,14 +53,14 @@ pacman.Board = class {
         let entity;
         entity = new pacman.Entity(x, y, z, type, this);
 
-        this.maps[z][x][y] = entity;
+        this.mapsCopy[z][x][y] = entity;
         this.entities.push(entity);
 
         return entity;
     }
 
     drawBoard() {
-        let map = this.maps[0];
+        let map = this.mapsCopy[0];
         let fragment = document.createDocumentFragment();
         map.forEach(row => {
             let r = document.createElement('div');
@@ -82,7 +83,7 @@ pacman.Board = class {
     }
 
     moveEntity(entity, x, y) {
-        let map = this.maps[entity.z];
+        let map = this.mapsCopy[entity.z];
         let [limitX, limitY] = this.getBoardLimits(map);
         if (x >= 0 && x < limitX && y >= 0 && y < limitY) {
             if (entity.type === pacman.PLAYER && map[x][y] === pacman.ROAD)
