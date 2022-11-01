@@ -6,9 +6,9 @@ pacman.Entity = class {
         this.type = type;
         this.board=board;
         this.intervalSetter=null;
-    }
-    //TODO Introducir cosas de entidad y no dejarlas todas en board
+    }    
      movePlayers(num, entity){
+        
           switch (num) {
               case DOWN:
                   board.moveEntity(entity, entity.x+1, entity.y);
@@ -27,28 +27,23 @@ pacman.Entity = class {
           }
     }
     enemyMovement(){
-        //TO DO Esto en una promesa
-        if(this.board.maps[0][playableChar.x][playableChar.y].type == pacman.ENEMY) board.gameEnd();
-
         board.entities.forEach(element => {
-          if(element.type==pacman.ENEMY){
-            if(playableChar.x>element.x)
-                board.moveEntity(element, element.x+1, element.y);
-            else if(playableChar.y>element.y)
-                board.moveEntity(element, element.x, element.y+1)
-            else if(playableChar.x<element.x)
-                board.moveEntity(element, element.x-1, element.y)
-            else if(playableChar.y<element.y)
-                board.moveEntity(element, element.x, element.y-1)
-          }
-        });
+            //TO DO Esto en una promesa
+            if(playableChar.x == element.x && playableChar.y == element.y && element.type == pacman.ENEMY && playableChar.z==element.z) this.board.gameEnd();
+        })
+            if(playableChar.x>this.x)
+                board.moveEntity(this, this.x+1, this.y);
+            else if(playableChar.y>this.y)
+                board.moveEntity(this, this.x, this.y+1);
+            else if(playableChar.x<this.x)
+                board.moveEntity(this, this.x-1, this.y);
+            else if(playableChar.y<this.y)
+                board.moveEntity(this, this.x, this.y-1);
       }
     enemyStart(){
         this.intervalSetter=setInterval(()=>this.enemyMovement(), 1000);
     }
-    //TO DO como actualmente no hay un final de juego no hago clear interval
-    //HAY QUE HACER CLEAR INTERVAL
     enemyEnd(){
         clearInterval(this.intervalSetter);
-   }
+   }  
 }

@@ -1,6 +1,5 @@
 let board = new pacman.Board();
-board.createBoard();
-board.addEntity(pacman.PLAYER);
-board.addEntity(pacman.ENEMY);
-board.drawBoard();
+board.addEntity(pacman.PLAYER, 0);
+board.addEntity(pacman.ENEMY, 0);
+board.addEntity(pacman.ENEMY, 1);
 board.gameStart();
