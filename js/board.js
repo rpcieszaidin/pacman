@@ -6,7 +6,7 @@ pacman.STAIR= 0;
 
 pacman.Board = class {
     constructor() {
-        this.maps = [
+        this.mapsOg = [
             [
                 [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]
             ],
@@ -14,6 +14,7 @@ pacman.Board = class {
                 [0, 0, 0, 0, 0, 0], [0, 1, 1, 1, 1, 0], [0, 0, 1, 1, 0, 0], [1, 0, 0, 0, 0, 1], [0, 0, 0 ,0, 0, 0]
             ]
         ];
+        this.maps = JSON.parse(JSON.stringify(this.mapsOg));
         this.entities = [];
         this.board = document.getElementById("board");
         this.interval = null;
