@@ -25,6 +25,7 @@ pacman.Board = class {
         [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 2],
       ],
     ];
+    this.copyMaps = JSON.parse(JSON.stringify(this.maps));
     this.entities = [];
     this.oldCellContent = pacman.PELLET;
     this.interval = null;
@@ -69,7 +70,7 @@ pacman.Board = class {
   }
 
   addEntity(type, x, y, z) {
-    let map = this.maps[z];
+    let map = this.copyMaps[z];
     let entity = null;
     switch (type) {
       case pacman.PLAYER:
@@ -149,7 +150,7 @@ pacman.Board = class {
   }
 
   moveEntity(entity, x, y) {
-    let map = this.maps[entity.z];
+    let map = this.copyMaps[entity.z];
     if (x >= 0 && x < map[map.length - 1].length && y >= 0 && y < map.length) {
       let oldCellContent,
         cellContent = map[y][x];
@@ -161,7 +162,7 @@ pacman.Board = class {
             newCellContent = this.entities.find(
               (element) => element.type == pacman.ENEMY
             );
-            //this.finishGame(false);
+            this.finishGame(false);
             let player = this.entities.find(
               (element) => element.type == pacman.PLAYER
             );
@@ -182,7 +183,7 @@ pacman.Board = class {
         } else {
           oldCellContent = this.oldCellContent;
           if (cellContent.type == pacman.PLAYER) {
-            //this.finishGame(false);
+            this.finishGame(false);
           } else {
             this.oldCellContent = cellContent;
           }
@@ -199,7 +200,7 @@ pacman.Board = class {
   drawBoard() {
     let table = document.createElement("table");
     table.setAttribute("id", "board");
-    let map = this.maps[this.numMap];
+    let map = this.copyMaps[this.numMap];
     for (let i = 0; i < map.length; i++) {
       let tr = document.createElement("tr");
       for (let j = 0; j < map[i].length; j++) {
