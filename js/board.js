@@ -8,7 +8,7 @@ pacman.Board = class {
     constructor() {
         this.maps = [
             [
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2],
                 [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
                 [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
@@ -19,7 +19,7 @@ pacman.Board = class {
                 [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
             ],
             [
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2],
+                [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
                 [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
                 [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
@@ -27,10 +27,10 @@ pacman.Board = class {
                 [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
                 [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                [3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
             ],
             [
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
                 [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
                 [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
@@ -38,18 +38,19 @@ pacman.Board = class {
                 [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
                 [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2]
+                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3]
             ]
         ];
         this.entities = [];
+        this.world = JSON.parse(JSON.stringify(this.maps));
     }
 
     correctPosition(entity){
-        let map = this.maps[entity.z];
+        let map = this.world[entity.z];
         if(map[entity.y][entity.x] == 0){
             map[entity.y][entity.x] = entity;
             this.entities.push(entity);
-            entity.move(this.maps, entity, this);
+            entity.move(this.world, entity, this);
         }
     }
 
@@ -65,8 +66,8 @@ pacman.Board = class {
         }
     }
 
-    drawBoard() {
-        let map = this.maps[0];
+    drawBoard(entity) {
+        let map = this.world[entity.z];
         let div = document.getElementById('map');
         for (let i = 0; i < map.length; i++) {
             for(let j = 0; j < map[i].length; j++) {
@@ -79,9 +80,14 @@ pacman.Board = class {
                     } 
                 } else if(map[i][j] == 0){
                     space.setAttribute("class" , "space");
-                }else{
+                }else if (map[i][j] == 1){
                     space.setAttribute("class" , "block");
+                }else if (map[i][j] == 2){
+                    space.setAttribute("class" , "stairup");
+                }else{
+                    space.setAttribute("class" , "stairdown");
                 }
+
                 div.appendChild(space);
             } 
             div.appendChild(document.createElement('br'));
@@ -91,7 +97,7 @@ pacman.Board = class {
     moveEntity(entity, x, y) {
         let div = document.getElementById('map');
         let end = document.getElementById('end');
-        let map = this.maps[entity.z];
+        let map = this.world[entity.z];
         if (x >= 0 && x < map[entity.y].length && y >= 0 && y < map.length) {
             if(map[y][x] == 0){
                 map[entity.y][entity.x] = 0;
@@ -101,9 +107,9 @@ pacman.Board = class {
                 while (div.firstChild) {
                     div.removeChild(div.firstChild);
                 }  
-                this.drawBoard(0);
+                this.drawBoard(entity);
             
-            }else if(map[y][x].type != pacman.ENEMY){
+            }else if(map[y][x] != 2 && map[y][x] != 3){
                 const myPromise = new Promise((resolve, reject) => {
                     if(map[y][x] != 1){
                         resolve(); 
@@ -115,6 +121,27 @@ pacman.Board = class {
                     end.innerHTML = 'DEFEATED';
                     end.style.display = "block";
                     });
+            }else if(map[y][x] == 2 && entity.type == pacman.PLAYER){
+               
+                map[entity.y][entity.x] = 0;
+                entity.x = x;
+                entity.y = y;
+                map[y][x] = 2;
+                this.entities.forEach(element => {
+                    element.z ++;
+                });
+                
+                
+
+            }else if(map[y][x] == 3 && entity.type == pacman.PLAYER){
+                
+                map[entity.y][entity.x] = 0;
+                entity.x = x;
+                entity.y = y;
+                map[y][x] = 3;
+                this.entities.forEach(element => {
+                    element.z --;
+                });
             }
         }
     }

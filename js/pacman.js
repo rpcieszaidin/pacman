@@ -33,7 +33,7 @@ pacman.Pacman = class {
 
     ghost(maps, entity, table){
 
-        pacman.INTERVAL = setInterval(movement, 500);
+        pacman.INTERVAL = setInterval(movement, 1000);
     
         function movement(){
             let positions = [];
@@ -46,19 +46,19 @@ pacman.Pacman = class {
                 }
             }
             if (entity.x + 1 < map[entity.y].length) {
-                if (map[entity.y][entity.x + 1] != 1){
+                if (map[entity.y][entity.x + 1] != 1 && map[entity.y][entity.x + 1].type != pacman.ENEMY){
                     positions[index] = [entity.x + 1, entity.y]
                 index ++;
                 } 
             }
             if (entity.y + 1 < map.length) {
-                if (map[entity.y + 1][entity.x] != 1){
+                if (map[entity.y + 1][entity.x] != 1 && map[entity.y + 1][entity.x].type != pacman.ENEMY){
                     positions[index] = [entity.x, entity.y + 1]
                     index ++;
                 }
             }
             if (entity.y - 1 >= 0) {
-                if (map[entity.y - 1][entity.x] != 1){
+                if (map[entity.y - 1][entity.x] != 1 && map[entity.y - 1][entity.x].type != pacman.ENEMY){
                     positions[index] = [entity.x, entity.y - 1]
                     index ++;
                 }
